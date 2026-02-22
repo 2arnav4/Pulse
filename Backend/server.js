@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { connectDB } = require('./config/database'); // Import DB connection
+const { connectDB, sequelize } = require('./config/database'); // Import DB connection
 const authRoutes = require('./routes/authRoutes'); // <--- IMPORT ROUTES
 
 require('dotenv').config();
@@ -9,6 +9,10 @@ const app = express();
 
 // Connect to Database
 connectDB(); // <--- CALL DB CONNECTION
+
+sequelize.sync({ alter: true })
+    .then(() => console.log('Database synced successfully'))
+    .catch((err) => console.log('Database sync error', err));
 
 app.use(cors());
 app.use(express.json());
