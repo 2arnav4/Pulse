@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import "./Dashboard.module.css";
+import styles from "./Dashboard.module.css"; // Notice this change!
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -18,53 +18,60 @@ export default function Dashboard() {
     logout();
     navigate("/");
   };
+
   return (
-    <div className="dashboard-layout">
+    <div className={styles["dashboard-layout"]}>
       {/* 1. Global Nav Bar */}
-      <nav className="dashboard-nav">
-        <div className="nav-brand">
-          <div className="brand-logo">P</div>
-          <span className="brand-text">Pulse</span>
+      <nav className={styles["dashboard-nav"]}>
+        <div className={styles["nav-brand"]}>
+          <div className={styles["brand-logo"]}>P</div>
+          <span className={styles["brand-text"]}>Pulse</span>
         </div>
-        <div className="nav-user">
-          <span className="user-greeting">Welcome, {user?.username}</span>
-          <button className="logout-btn" onClick={handleLogout}>
+        <div className={styles["nav-user"]}>
+          <span className={styles["user-greeting"]}>
+            Welcome, {user?.username}
+          </span>
+          <button className={styles["logout-btn"]} onClick={handleLogout}>
             Logout
           </button>
         </div>
       </nav>
+
       {/* 2. Main Content Area */}
-      <main className="dashboard-main">
-        <header className="dashboard-header">
+      <main className={styles["dashboard-main"]}>
+        <header className={styles["dashboard-header"]}>
           <div>
-            <h1 className="header-title">Your Workspaces</h1>
-            <p className="header-subtitle">
+            <h1 className={styles["header-title"]}>Your Workspaces</h1>
+            <p className={styles["header-subtitle"]}>
               Select a workspace to jump into your command center.
             </p>
           </div>
           <button
-            className="create-workspace-btn"
+            className={styles["create-workspace-btn"]}
             onClick={() => alert("Create Modal Coming Soon!")}
           >
             + New Workspace
           </button>
         </header>
+
         {/* 3. The Grid of Cards */}
-        <div className="workspace-grid">
+        <div className={styles["workspace-grid"]}>
           {workspaces.map((space) => (
             <div
               key={space.id}
-              className="workspace-card"
+              className={styles["workspace-card"]}
               onClick={() => alert(`Going to ${space.name}...`)}
             >
-              <div className="card-top">
-                <h3 className="card-title">{space.name}</h3>
-                <span className={`role-badge ${space.role.toLowerCase()}`}>
+              <div className={styles["card-top"]}>
+                <h3 className={styles["card-title"]}>{space.name}</h3>
+                <span
+                  className={`${styles["role-badge"]} ${styles[space.role.toLowerCase()]}`}
+                >
                   {space.role}
                 </span>
               </div>
-              <div className="card-bottom">
-                <div className="member-count">
+              <div className={styles["card-bottom"]}>
+                <div className={styles["member-count"]}>
                   <svg
                     width="16"
                     height="16"
@@ -82,7 +89,7 @@ export default function Dashboard() {
                   </svg>
                   <span>{space.members} members</span>
                 </div>
-                <button className="enter-btn">Enter &rarr;</button>
+                <button className={styles["enter-btn"]}>Enter &rarr;</button>
               </div>
             </div>
           ))}
