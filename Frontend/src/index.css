@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Backgrounds: The warm, buttery creams */
+    --bg-primary: #FFF1E6;
+    --bg-secondary: #F0EFEB;
+
+    /* Text: Inverted to dark brown so it's readable on light cream */
+    --text-main: #3d322c;
+    --text-muted: #79685e;
+
+    /* Accents: The mossy greens and earthy browns */
+    --accent: #A5A58D;
+    /* Moss green */
+    --accent-hover: #B7B7A4;
+    /* Lighter moss green */
+    --brand-gradient: linear-gradient(135deg, #CB997E 0%, #DDBEA9 100%);
+    /* The warm terracotta/browns for buttons */
+
+    /* Glass effect: Adjusted for light mode (white with slight opacity) */
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(203, 153, 126, 0.2);
+    /* Subtle terracotta border */
+
+    /* Inputs: Solid light cream */
+    --input-bg: #F0EFEB;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+    /* A beautiful subtle radial gradient mimicking a warm sun glow */
+    background-image:
+        radial-gradient(circle at 15% 50%, rgba(203, 153, 126, 0.15), transparent 30%),
+        radial-gradient(circle at 85% 30%, rgba(165, 165, 141, 0.15), transparent 30%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
