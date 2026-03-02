@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import "./Auth.css";
 
 export default function Login() {
@@ -14,9 +15,10 @@ export default function Login() {
     e.preventDefault();
     try {
       await login(email, password); // Call backend
+      toast.success("Welcome back!");
       navigate("/dashboard"); // Go to dashboard!
-    } catch (err) {
-      alert("Invalid Credentials", err);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
 

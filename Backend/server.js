@@ -9,6 +9,8 @@ import 'dotenv/config';
 import User from './models/User.js';
 import Workspace from './models/Workspace.js';
 import WorkspaceMember from './models/WorkspaceMember.js';
+import workspaceRoutes from './routes/workspaceRoutes.js'; // <--- ADD THIS LINE
+
 
 
 // A User has many Workspaces, A Workspace has many Users. 
@@ -40,6 +42,7 @@ app.use(json());
 
 // Use Routes
 app.use('/api/auth', authRoutes); // <--- MOUNT ROUTES
+app.use('/api/workspaces', workspaceRoutes); // <--- MOUNT ROUTES
 // This means any request starting with /api/auth will go to authRoutes
 // Example: /api/auth/register
 
