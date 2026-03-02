@@ -28,3 +28,4 @@
 *.ntvs*
 *.njsproj
 *.sln
+*.session.sql

@@ -1,17 +1,17 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('../controllers/authController');
-const authMiddleware = require('../middleware/authMiddleware');
+import { Router } from 'express';
+const router = Router();
+import { register, login, getMe } from '../controllers/authController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 // Route: POST /api/auth/register
-router.post('/register', authController.register);
+router.post('/register', register);
 
 // Route: POST /api/auth/login
-router.post('/login', authController.login);
+router.post('/login', login);
 
 //Route: GET /api/auth/me
 //Notice we put authMiddleware in the middle! It runs before getMe
-router.get('/me', authMiddleware, authController.getMe); // <-- NEW PROTECTED ROUTE
+router.get('/me', authMiddleware, getMe); // <-- NEW PROTECTED ROUTE
 
 
-module.exports = router;
+export default router;

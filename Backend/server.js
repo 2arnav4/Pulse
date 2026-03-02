@@ -1,9 +1,31 @@
-const express = require('express');
-const cors = require('cors');
-const { connectDB, sequelize } = require('./config/database'); // Import DB connection
-const authRoutes = require('./routes/authRoutes'); // <--- IMPORT ROUTES
+import express, { json } from 'express';
+import cors from 'cors';
+import { connectDB, sequelize } from './config/database.js'; // Import DB connection
+import authRoutes from './routes/authRoutes.js'; // <--- IMPORT ROUTES
 
 require('dotenv').config();
+// ---------------------------------------------------------
+// IMPORT MODELS AND DEFINE RELATIONSHIPS
+// ---------------------------------------------------------
+import User from './models/User.js';
+import Workspace from './models/Workspace.js';
+import WorkspaceMember from './models/WorkspaceMember.js';
+
+
+// A User has many Workspaces, A Workspace has many Users. 
+// They are connected "through" the WorkspaceMember table.
+
+User.belongsToMany(Workspace, { through: WorkspaceMember, foreignKey: 'userId' });
+Workspace.belongsToMany(User, { through: WorkspaceMember, foreignKey: 'workspaceId' });
+
+
+// We also need direct access to the join table for specific queries
+
+User.hasMany(WorkspaceMember, { foreignKey: 'userId' });
+WorkspaceMember.belongsTo(User, { foreignKey: 'userId' });
+Workspace.hasMany(WorkspaceMember, { foreignKey: 'workspaceId' });
+WorkspaceMember.belongsTo(Workspace, { foreignKey: 'workspaceId' });
+// ---------------------------------------------------------
 
 const app = express();
 
@@ -15,7 +37,7 @@ sequelize.sync({ alter: true })
     .catch((err) => console.log('Database sync error', err));
 
 app.use(cors());
-app.use(express.json());
+app.use(json());
 
 // Use Routes
 app.use('/api/auth', authRoutes); // <--- MOUNT ROUTES

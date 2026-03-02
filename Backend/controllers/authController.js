@@ -1,10 +1,10 @@
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import User from '../models/User.js';
+import { genSalt, hash, compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
 
 
 // 1. REGISTER USER
-exports.register = async (req, res) => {
+export async function register(req, res) {
     try {
         //Get Data from the frontend request
         const { username, email, password } = req.body;
@@ -16,8 +16,8 @@ exports.register = async (req, res) => {
         }
 
         //Hash the password (encrypt it)
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const salt = await genSalt(10);
+        const hashedPassword = await hash(password, salt);
 
         // Create the new user in the database 
         const newUser = await User.create({
@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
             password_hash: hashedPassword,
         });
         // Create a Token (JWT) so that user is logged in immediately 
-        const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+        const token = sign({ id: newUser.id }, process.env.JWT_SECRET, {
             expiresIn: '1d',
         });
 
@@ -44,10 +44,10 @@ exports.register = async (req, res) => {
         console.log(error);
         res.status(500).json({ message: 'Server error' });
     }
-};
+}
 
 // 2. LOGIN USER 
-exports.login = async (req, res) => {
+export async function login(req, res) {
     try {
         const { email, password } = req.body;
         // Find user by email
@@ -57,13 +57,13 @@ exports.login = async (req, res) => {
         }
 
         // Compare the password they typed with the hashed password in the DB
-        const isMatch = await bcrypt.compare(password, user.password_hash);
+        const isMatch = await compare(password, user.password_hash);
         if (!isMatch) {
             return res.status(404).json({ message: 'Invalid credentials' });
         }
 
         //Generate Token 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+        const token = sign({ id: user.id }, process.env.JWT_SECRET, {
             expiresIn: '1d',
         });
 
@@ -82,7 +82,7 @@ exports.login = async (req, res) => {
     }
 }
 // 3. GET CURRENT LOGGED IN USER
-exports.getMe = async (req, res) => {
+export async function getMe(req, res) {
     try {
         // req.user.id comes from the authMiddleware!
         const user = await User.findByPk(req.user.id, {
@@ -98,4 +98,4 @@ exports.getMe = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
-};
+}

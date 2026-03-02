@@ -1,6 +1,6 @@
-const jwt = require("jsonwebtoken");
+import { verify } from "jsonwebtoken";
 
-module.exports = (req, res, next) => {
+export default (req, res, next) => {
     // 1. Get the token from the header
     const token = req.header("Authorization");
 
@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
     try {
         // 2. Verify token (remove "Bearer " part if present)
         const tokenString = token.replace('Bearer', '');
-        const decoded = jwt.verify(tokenString, process.env.JWT_SECRET);
+        const decoded = verify(tokenString, process.env.JWT_SECRET);
         // 3. Add user id to the request object so routes can use it 
         req.user = decoded;
 
