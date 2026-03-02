@@ -2,8 +2,7 @@ import express, { json } from 'express';
 import cors from 'cors';
 import { connectDB, sequelize } from './config/database.js'; // Import DB connection
 import authRoutes from './routes/authRoutes.js'; // <--- IMPORT ROUTES
-
-require('dotenv').config();
+import 'dotenv/config';
 // ---------------------------------------------------------
 // IMPORT MODELS AND DEFINE RELATIONSHIPS
 // ---------------------------------------------------------

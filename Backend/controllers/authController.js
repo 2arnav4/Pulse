@@ -1,6 +1,8 @@
 import User from '../models/User.js';
-import { genSalt, hash, compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
+import bcryptjs from 'bcryptjs';
+const { genSalt, hash, compare } = bcryptjs;
+import jwt from 'jsonwebtoken';
+const { sign } = jwt;
 
 
 // 1. REGISTER USER
