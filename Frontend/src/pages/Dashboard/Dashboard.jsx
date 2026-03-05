@@ -43,7 +43,7 @@ export default function Dashboard() {
     setWorkspaces((prev) => [...prev, newSpace]);
     setIsModalOpen(false);
   };
-  const handleEnterWorkspace = (name) => toast.success(`Entering ${name}...`);
+  const handleEnterWorkspace = (id) => navigate(`/workspace/${id}`);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -108,8 +108,8 @@ export default function Dashboard() {
               {workspaces.map((space, index) => (
                 <div
                   key={space.id}
-                  className={styles["workspace-card"]}
-                  onClick={() => handleEnterWorkspace(space.name)}
+                className={styles["workspace-card"]}
+                  onClick={() => handleEnterWorkspace(space.id)}
                 >
                   <div className={styles["card-cover"]}>
                     <img

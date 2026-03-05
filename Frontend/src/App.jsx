@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast"; // <-- IMPORT THIS
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import WorkspaceDetail from "./pages/WorkspaceDetail/WorkspaceDetail";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -80,6 +81,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workspace/:id"
+            element={
+              <ProtectedRoute>
+                <WorkspaceDetail />
               </ProtectedRoute>
             }
           />
