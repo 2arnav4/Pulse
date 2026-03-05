@@ -1,66 +1,209 @@
-/* Frontend/src/pages/Dashboard.css */
+/* Dashboard.module.css — Sidebar layout matching Figma */
 
+/* ─── LAYOUT SHELL ─────────────────────────────────────────── */
 .dashboard-layout {
+    display: flex;
     min-height: 100vh;
+    background: var(--bg-primary);
+}
+
+/* ─── LEFT SIDEBAR ──────────────────────────────────────────── */
+.sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 10;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.brand-logo {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.brand-info {
     display: flex;
     flex-direction: column;
 }
 
-/* --- NAVIGATION BAR --- */
+.brand-text {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+.brand-plan {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Nav items */
+.sidebar-nav {
+    flex: 1;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.nav-item:hover {
+    background: rgba(176, 113, 101, 0.08);
+    color: var(--text-main);
+}
+
+.nav-item.active {
+    background: var(--accent);
+    color: white;
+}
+
+.nav-item.active .nav-icon {
+    opacity: 1;
+}
+
+.nav-icon {
+    font-size: 16px;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+/* New workspace button pinned to bottom */
+.sidebar-footer {
+    padding: 16px 14px;
+    border-top: 1px solid var(--border);
+}
+
+.new-workspace-btn {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    box-shadow: 0 2px 8px var(--accent-shadow);
+}
+
+.new-workspace-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px var(--accent-shadow);
+}
+
+/* ─── MAIN AREA ─────────────────────────────────────────────── */
+.dashboard-body {
+    margin-left: 220px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Top navbar */
 .dashboard-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 40px;
-    background: var(--glass-bg);
-    border-bottom: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
+    padding: 16px 36px;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 5;
 }
 
-.nav-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.brand-logo {
-    width: 32px;
-    height: 32px;
-    background: var(--brand-gradient);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: white;
-    font-size: 18px;
-}
-
-.brand-text {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text-main);
+.nav-page-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: -0.01em;
 }
 
 .nav-user {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 14px;
+}
+
+.user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
 }
 
 .user-greeting {
     font-size: 14px;
-    color: var(--text-muted);
     font-weight: 500;
+    color: var(--text-main);
 }
 
 .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     background: transparent;
-    border: 1px solid var(--glass-border);
-    color: var(--text-main);
-    padding: 8px 16px;
-    border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    color: var(--text-secondary);
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
@@ -68,157 +211,267 @@
 }
 
 .logout-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
-    /* Darkened slightly on hover for light theme */
-    border-color: var(--text-muted);
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
-/* --- MAIN CONTENT & HEADER --- */
+/* ─── MAIN CONTENT ──────────────────────────────────────────── */
 .dashboard-main {
     flex: 1;
-    padding: 60px 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
+    padding: 40px 36px;
 }
 
 .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 40px;
+    margin-bottom: 32px;
 }
 
 .header-title {
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-family: 'Fraunces', serif;
+    font-size: 34px;
+    font-weight: 600;
     color: var(--text-main);
-    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
 }
 
 .header-subtitle {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--text-muted);
 }
 
-.create-workspace-btn {
-    background: var(--brand-gradient);
-    color: white;
-    /* Keep white for button text on warm colors */
-    border: none;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(203, 153, 126, 0.3);
-    /* Terracotta shadow */
-}
-
-.create-workspace-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(203, 153, 126, 0.5);
-}
-
-/* --- WORKSPACE GRID & CARDS --- */
+/* ─── WORKSPACE GRID ────────────────────────────────────────── */
 .workspace-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
 }
 
+/* ─── WORKSPACE CARD ────────────────────────────────────────── */
 .workspace-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-height: 180px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-    /* Very subtle base shadow for light cards */
 }
 
 .workspace-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 12px 24px rgba(165, 165, 141, 0.2);
-    /* Mossy shadow on hover */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.09);
+    border-color: var(--border-strong);
+}
+
+/* Cover image area */
+.card-cover {
+    width: 100%;
+    height: 160px;
+    background: var(--bg-secondary);
+    overflow: hidden;
+    position: relative;
+}
+
+.card-cover-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, #d6cfc5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    color: var(--text-muted);
+    font-weight: 300;
+    font-style: italic;
+}
+
+/* Card body */
+.card-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .card-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    margin-bottom: 14px;
 }
 
 .card-title {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-main);
-    margin-top: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
 }
 
-/* --- ROLE BADGES --- */
+/* Role badges */
 .role-badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    margin-left: 8px;
 }
 
-.role-badge.admin {
-    background: rgba(165, 165, 141, 0.2);
-    /* Light moss */
-    color: #4a4a3f;
-    /* Darker moss for contrast */
-    border: 1px solid rgba(165, 165, 141, 0.4);
+.admin {
+    background: var(--accent);
+    color: white;
 }
 
-.role-badge.member {
-    background: rgba(203, 153, 126, 0.1);
-    /* Light terracotta */
-    color: var(--text-muted);
-    border: 1px solid var(--glass-border);
+.member {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-strong);
 }
 
+/* Card bottom */
 .card-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    /* Darker dividing line for light mode */
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
 }
 
 .member-count {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
+    gap: 5px;
+    font-size: 12px;
     color: var(--text-muted);
-    font-weight: 500;
 }
 
 .enter-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-strong);
+    color: var(--text-main);
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
     font-weight: 600;
-    transition: all 0.2s;
     cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
+.enter-btn:hover,
 .workspace-card:hover .enter-btn {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+/* ─── HELP BANNER ───────────────────────────────────────────── */
+.help-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 48px;
+    padding: 18px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.help-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
     color: var(--accent);
-    /* Hovering the card highlights the enter button in moss green */
+}
+
+.help-text {
+    flex: 1;
+}
+
+.help-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+.help-text span {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.help-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.help-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.help-btn:hover {
+    background: var(--bg-secondary);
+}
+
+.help-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.help-link:hover {
+    color: var(--accent-hover);
+}
+
+/* ─── EMPTY STATE ───────────────────────────────────────────── */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 15px;
+}
+
+/* ─── LEGACY CLASS SUPPORT ──────────────────────────────────── */
+.create-workspace-btn {
+    display: none;
 }

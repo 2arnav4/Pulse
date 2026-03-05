@@ -37,7 +37,13 @@ sequelize.sync({ alter: true })
     .then(() => console.log('Database synced successfully'))
     .catch((err) => console.log('Database sync error', err));
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true // <-- THIS explicitly allows 'Bearer token' auth!
+}));
+
 app.use(json());
 
 // Use Routes

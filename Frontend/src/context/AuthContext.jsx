@@ -9,6 +9,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("Pulse_token"));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,14 +34,17 @@ export const AuthProvider = ({ children }) => {
   // 2. login Logic
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
-    localStorage.setItem("Pulse_token", res.data.token); // Save token securely
-    setUser(res.data.user); // Save user data globally
+    localStorage.setItem("Pulse_token", res.data.token);
+    setToken(res.data.token);
+    setUser(res.data.user); // Save token securely
+    // Save user data globally
   };
 
   // 3. Register Logic
   const register = async (username, email, password) => {
     const res = await api.post("/auth/register", { username, email, password });
     localStorage.setItem("Pulse_token", res.data.token); // Save token securely
+    setToken(res.data.token);
     setUser(res.data.user); // Save user data globally
   };
 
@@ -48,10 +52,11 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("Pulse_token");
     setUser(null);
+    setToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

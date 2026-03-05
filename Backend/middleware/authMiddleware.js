@@ -12,7 +12,7 @@ export default (req, res, next) => {
 
     try {
         // 2. Verify token (remove "Bearer " part if present)
-        const tokenString = token.replace('Bearer', '');
+        const tokenString = token.replace('Bearer ', '');
         const decoded = verify(tokenString, process.env.JWT_SECRET);
         // 3. Add user id to the request object so routes can use it 
         req.user = decoded;
