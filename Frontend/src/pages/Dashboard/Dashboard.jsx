@@ -96,19 +96,47 @@ export default function Dashboard() {
           </header>
 
           {loading ? (
-            <div className={styles["empty-state"]}>
-              <p>Loading your workspaces...</p>
+            <div className={styles["workspace-grid"]}>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className={styles["skeleton-card"]}>
+                  <div
+                    className={`${styles["skeleton-cover"]} ${styles["skeleton"]}`}
+                  />
+                  <div className={styles["skeleton-body"]}>
+                    <div
+                      className={`${styles["skeleton-title"]} ${styles["skeleton"]}`}
+                    />
+                    <div
+                      className={`${styles["skeleton-subtitle"]} ${styles["skeleton"]}`}
+                    />
+                    <div
+                      className={`${styles["skeleton-footer"]} ${styles["skeleton"]}`}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : workspaces.length === 0 ? (
             <div className={styles["empty-state"]}>
-              <p>No workspaces yet. Create one!</p>
+              <div className={styles["empty-state-icon"]}>🗂️</div>
+              <h3 className={styles["empty-state-title"]}>No workspaces yet</h3>
+              <p className={styles["empty-state-text"]}>
+                Create your first workspace to start collaborating with your
+                team.
+              </p>
+              <button
+                className={styles["empty-state-btn"]}
+                onClick={handleCreateClick}
+              >
+                + Create your first workspace
+              </button>
             </div>
           ) : (
             <div className={styles["workspace-grid"]}>
               {workspaces.map((space, index) => (
                 <div
                   key={space.id}
-                className={styles["workspace-card"]}
+                  className={styles["workspace-card"]}
                   onClick={() => handleEnterWorkspace(space.id)}
                 >
                   <div className={styles["card-cover"]}>
@@ -131,6 +159,11 @@ export default function Dashboard() {
                         {space.role.toUpperCase()}
                       </span>
                     </div>
+                    {space.description && (
+                      <p className={styles["card-description"]}>
+                        {space.description}
+                      </p>
+                    )}
                     <div className={styles["card-bottom"]}>
                       <div className={styles["member-count"]}>
                         Created{" "}

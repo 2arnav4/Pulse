@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   HiHome,
@@ -11,6 +11,8 @@ import styles from "./Sidebar.module.css";
 
 export default function Sidebar({ onNewWorkspace }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
 
   return (
     <aside className={styles["sidebar"]}>
@@ -24,7 +26,7 @@ export default function Sidebar({ onNewWorkspace }) {
 
       <nav className={styles["sidebar-nav"]}>
         <button
-          className={`${styles["nav-item"]} ${styles["active"]}`}
+          className={`${styles["nav-item"]} ${isActive("/dashboard") ? styles["active"] : ""}`}
           onClick={() => navigate("/dashboard")}
         >
           <HiHome className={styles["nav-icon"]} /> Home
