@@ -6,7 +6,17 @@ import api from "../../services/api";
 import toast from "react-hot-toast";
 import CreateWorkspaceModal from "./CreateWorkspaceModal";
 import styles from "./Dashboard.module.css";
-import { HiHome, HiFolder, HiCheckCircle, HiChartBar, HiCog, HiArrowRight, HiQuestionMarkCircle, HiLogout } from "react-icons/hi";
+import Sidebar from "../../components/Sidebar";
+import {
+  HiHome,
+  HiFolder,
+  HiCheckCircle,
+  HiChartBar,
+  HiCog,
+  HiArrowRight,
+  HiQuestionMarkCircle,
+  HiLogout,
+} from "react-icons/hi";
 
 // Rotating set of free placeholder images for workspace cards
 const COVER_IMAGES = [
@@ -24,7 +34,10 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleLogout = () => { logout(); navigate("/"); };
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
   const handleCreateClick = () => setIsModalOpen(true);
   const handleWorkspaceCreated = (newSpace) => {
     setWorkspaces((prev) => [...prev, newSpace]);
@@ -50,42 +63,13 @@ export default function Dashboard() {
 
   return (
     <div className={styles["dashboard-layout"]}>
-      <CreateWorkspaceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onWorkspaceCreated={handleWorkspaceCreated} />
+      <CreateWorkspaceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onWorkspaceCreated={handleWorkspaceCreated}
+      />
 
-      {/* ── SIDEBAR ── */}
-      <aside className={styles["sidebar"]}>
-        <div className={styles["sidebar-brand"]}>
-          <div className={styles["brand-logo"]}>⚡</div>
-          <div className={styles["brand-info"]}>
-            <span className={styles["brand-text"]}>Pulse Workspace</span>
-            <span className={styles["brand-plan"]}>Enterprise Plan</span>
-          </div>
-        </div>
-
-        <nav className={styles["sidebar-nav"]}>
-          <button className={`${styles["nav-item"]} ${styles["active"]}`}>
-            <HiHome className={styles["nav-icon"]} /> Home
-          </button>
-          <button className={styles["nav-item"]}>
-            <HiFolder className={styles["nav-icon"]} /> Projects
-          </button>
-          <button className={styles["nav-item"]}>
-            <HiCheckCircle className={styles["nav-icon"]} /> Tasks
-          </button>
-          <button className={styles["nav-item"]}>
-            <HiChartBar className={styles["nav-icon"]} /> Analytics
-          </button>
-          <button className={styles["nav-item"]}>
-            <HiCog className={styles["nav-icon"]} /> Settings
-          </button>
-        </nav>
-
-        <div className={styles["sidebar-footer"]}>
-          <button className={styles["new-workspace-btn"]} onClick={handleCreateClick}>
-            + New Workspace
-          </button>
-        </div>
-      </aside>
+      <Sidebar onNewWorkspace={handleCreateClick} />
 
       {/* ── MAIN BODY ── */}
       <div className={styles["dashboard-body"]}>
@@ -93,7 +77,9 @@ export default function Dashboard() {
           <span className={styles["nav-page-title"]}>Dashboard Overview</span>
           <div className={styles["nav-user"]}>
             <div className={styles["user-avatar"]}>{avatarLetter}</div>
-            <span className={styles["user-greeting"]}>Welcome, {user?.username}</span>
+            <span className={styles["user-greeting"]}>
+              Welcome, {user?.username}
+            </span>
             <button className={styles["logout-btn"]} onClick={handleLogout}>
               <HiLogout /> Logout
             </button>
@@ -104,7 +90,8 @@ export default function Dashboard() {
           <header className={styles["dashboard-header"]}>
             <h1 className={styles["header-title"]}>Your Workspaces</h1>
             <p className={styles["header-subtitle"]}>
-              You are currently active in {workspaces.length} workspace{workspaces.length !== 1 ? "s" : ""}.
+              You are currently active in {workspaces.length} workspace
+              {workspaces.length !== 1 ? "s" : ""}.
             </p>
           </header>
 
@@ -119,24 +106,39 @@ export default function Dashboard() {
           ) : (
             <div className={styles["workspace-grid"]}>
               {workspaces.map((space, index) => (
-                <div key={space.id} className={styles["workspace-card"]} onClick={() => handleEnterWorkspace(space.name)}>
+                <div
+                  key={space.id}
+                  className={styles["workspace-card"]}
+                  onClick={() => handleEnterWorkspace(space.name)}
+                >
                   <div className={styles["card-cover"]}>
                     <img
                       src={COVER_IMAGES[index % COVER_IMAGES.length]}
                       alt={space.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
                     />
                   </div>
                   <div className={styles["card-body"]}>
                     <div className={styles["card-top"]}>
                       <h3 className={styles["card-title"]}>{space.name}</h3>
-                      <span className={`${styles["role-badge"]} ${styles[space.role.toLowerCase()]}`}>
+                      <span
+                        className={`${styles["role-badge"]} ${styles[space.role.toLowerCase()]}`}
+                      >
                         {space.role.toUpperCase()}
                       </span>
                     </div>
                     <div className={styles["card-bottom"]}>
                       <div className={styles["member-count"]}>
-                        📅 Created {new Date(space.joinedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        Created{" "}
+                        {new Date(space.joinedAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </div>
                       <button className={styles["enter-btn"]}>
                         Enter Workspace <HiArrowRight />
@@ -149,7 +151,9 @@ export default function Dashboard() {
           )}
 
           <div className={styles["help-banner"]}>
-            <div className={styles["help-icon"]}><HiQuestionMarkCircle size={20} /></div>
+            <div className={styles["help-icon"]}>
+              <HiQuestionMarkCircle size={20} />
+            </div>
             <div className={styles["help-text"]}>
               <strong>Need help with workspaces?</strong>
               <span>Read our documentation or contact the support team.</span>
