@@ -17,7 +17,7 @@ const WorkspaceMember = sequelize.define("WorkspaceMember", {
         allowNull: false,
     },
     role: {
-        type: DataTypes.ENUM("admin", "member"),
+        type: DataTypes.ENUM('admin', 'member'),
         allowNull: false,
         defaultValue: "member",
     }
