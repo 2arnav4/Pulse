@@ -153,3 +153,55 @@ export async function getWorkspaceById(req, res) {
     res.status(500).json({ message: "Server error" });
   }
 }
+// 3. ADD MEMBER TO WORKSPACE (BY EMAIL)
+export async function addMemberByEmail(req, res) {
+  try {
+    const { id } = req.params;
+    const { email } = req.body;
+    const reqUserId = req.user.id;
+
+    // A: Only admins can invite
+    const requesterMembership = await WorkspaceMember.findOne({
+      where: { userId: reqUserId, workspaceId: id, role: "admin" }
+    });
+    if (!requesterMembership) {
+      return res.status(403).json({ message: "Only workspace admins can invite members" });
+    }
+
+    // B: Ensure user exists
+    const userToAdd = await User.findOne({ where: { email } });
+    if (!userToAdd) {
+      return res.status(404).json({ message: "No registered user found with that email" });
+    }
+
+    // C: Prevent duplicates
+    const existingMember = await WorkspaceMember.findOne({
+      where: { userId: userToAdd.id, workspaceId: id }
+    });
+    if (existingMember) {
+      return res.status(400).json({ message: "User is already in this workspace" });
+    }
+
+    // D: Create membership
+    const newMembership = await WorkspaceMember.create({
+      userId: userToAdd.id,
+      workspaceId: id,
+      role: "member"
+    });
+
+    res.status(201).json({
+      message: "Member added successfully",
+      member: {
+        id: userToAdd.id,
+        username: userToAdd.username,
+        email: userToAdd.email,
+        role: newMembership.role,
+        joinedAt: newMembership.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error("Error adding member:", error);
+    res.status(500).json({ message: "Server error while adding member" });
+  }
+}
