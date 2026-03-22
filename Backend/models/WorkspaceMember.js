@@ -7,8 +7,17 @@ const WorkspaceMember = sequelize.define("WorkspaceMember", {
         primaryKey: true,
         autoIncrement: true,
     },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+
+    },
+    workspaceId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
     role: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM("admin", "member"),
         allowNull: false,
         defaultValue: "member",
     }
