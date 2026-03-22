@@ -9,6 +9,10 @@ const Workspace = sequelize.define("Workspace", {
     },
     name: {
         type: DataTypes.STRING,
+        validate: {
+            notEmpty: true,
+            len: [2, 50]
+        },
         allowNull: false,
 
     },

@@ -1,6 +1,7 @@
 import Workspace from "../models/Workspace.js";
 import WorkspaceMember from "../models/WorkspaceMember.js";
 import User from '../models/User.js';
+import { sequelize } from "../config/database.js";
 
 // 1. CREATE WORKSPACE
 export async function createWorkspace(req, res) {
@@ -30,23 +31,42 @@ export async function createWorkspace(req, res) {
     }
 
     const trimmedName = name.trim();
-    // Create the actual Workspace
-    const newWorkspace = await Workspace.create({
-      name: trimmedName,
-      description: description?.trim() || "",
-    });
 
-    // Automatically add the creator to the WorkspaceMember table as an Admin
-    await WorkspaceMember.create({
-      userId: userId,
-      workspaceId: newWorkspace.id,
-      role: "Admin",
-    });
+    // 1. START ATOMIC TRANSACTION
+    const t = await sequelize.transaction();
 
-    res.status(201).json({
-      message: "Workspace created successfully",
-      workspace: newWorkspace,
-    });
+    try {
+      // 2. Create the Workspace
+      const newWorkspace = await Workspace.create(
+        {
+          name: trimmedName,
+          description: description?.trim() || "",
+        },
+        { transaction: t } // Link operation to transaction
+      );
+
+      // 3. Automatically add creator to WorkspaceMember table as an Admin
+      await WorkspaceMember.create(
+        {
+          userId: userId,
+          workspaceId: newWorkspace.id,
+          role: "admin", // Must be lowercase 'admin' to match the ENUM 
+        },
+        { transaction: t } // Link operation to transaction
+      );
+
+      // 4. COMMIT - Save everything to the database
+      await t.commit();
+
+      res.status(201).json({
+        message: "Workspace created successfully",
+        workspace: newWorkspace,
+      });
+    } catch (transactionError) {
+      // 5. ROLLBACK - If anything fails, undo everything
+      await t.rollback();
+      throw transactionError; // Let the outer catch block handle it
+    }
   } catch (error) {
     console.error("Error creating workspace:", error);
     res.status(500).json({ message: "Server error" });
@@ -93,41 +113,41 @@ export async function getWorkspaceById(req, res) {
     //Checking if the user is already a member of the workspace
 
     const membership = await WorkspaceMember.findOne({
-      where: { userId: userId, workspaceId: id}, 
+      where: { userId: userId, workspaceId: id },
     });
 
     if (!membership) {
       return res.status(403).json({ message: "You are not a member of this workspace" });
     }
     // Get the workspace details
-     const workspace = await Workspace.findByPk(id, {
-      attributes: ["id", "name","description", "createdAt"]
-     });
-     if (!workspace) {
-            return res.status(404).json({ message: 'Workspace not found' });
-        }
+    const workspace = await Workspace.findByPk(id, {
+      attributes: ["id", "name", "description", "createdAt"]
+    });
+    if (!workspace) {
+      return res.status(404).json({ message: 'Workspace not found' });
+    }
 
-      // Get all members of this workspace
-        const members = await WorkspaceMember.findAll({
-          where: { workspaceId: id },
-          include: [{
-            model: User,
-            attributes: ['id', 'username', 'email'] // Adjust based on your User model
-          }]
-        })
+    // Get all members of this workspace
+    const members = await WorkspaceMember.findAll({
+      where: { workspaceId: id },
+      include: [{
+        model: User,
+        attributes: ['id', 'username', 'email'] // Adjust based on your User model
+      }]
+    })
 
-        const formattedMembers = members.map(m => ({
-          id: m.User.id,
-          username: m.User.username,
-          email: m.User.email,
-          role: m.role,
-          joinedAt: m.createdAt
-        }));
+    const formattedMembers = members.map(m => ({
+      id: m.User.id,
+      username: m.User.username,
+      email: m.User.email,
+      role: m.role,
+      joinedAt: m.createdAt
+    }));
 
-        res.json({
-          workspace: workspace,
-          members: formattedMembers
-        })
+    res.json({
+      workspace: workspace,
+      members: formattedMembers
+    })
   } catch (error) {
     console.error("Error fetching workspace details:", error);
     res.status(500).json({ message: "Server error" });
