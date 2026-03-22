@@ -26,7 +26,7 @@ export default function CreateWorkspaceModal({
     setIsSubmitting(true);
     try {
       // POST the new workspace to the backend
-      const res = await api.post("/workspaces", { name, description})
+      const res = await api.post("/workspaces", { name, description });
 
       toast.success("Workspace created successfully");
 
@@ -36,7 +36,7 @@ export default function CreateWorkspaceModal({
         id: res.data.workspace.id,
         name: res.data.workspace.name,
         description: res.data.workspace.description,
-        role: "Admin", // Creator is always the Admin
+        role: "admin", // Creator is always the Admin
         joinedAt: res.data.workspace.createdAt,
       };
 
