@@ -6,39 +6,47 @@ import { useAuth } from "../../context/AuthContext";
 import Sidebar from "../../components/Sidebar";
 import { HiLogout, HiUserCircle } from "react-icons/hi";
 import styles from "./WorkspaceDetail.module.css";
-
+import InviteMemberModal from "./InviteMemberModal";
 
 export default function WorkspaceDetail() {
-    const { id } = useParams();
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
+  const { id } = useParams();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-    const [ workspace, setWorkspace] = useState(null);
-    const [ members, setMembers] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [workspace, setWorkspace] = useState(null);
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-    const handleLogout = () => { logout(); navigate("/"); };
+  const handleMemberAdded = (newMember) => {
+    setMembers((prev) => [...prev, newMember]);
+  };
 
-    useEffect(() => {
-        const fetchWorkspaceDetails = async () => {
-            try {
-                const res = await api.get(`/workspaces/${id}`)
-                setWorkspace(res.data.workspace);
-                setMembers(res.data.members);
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
-            } catch ( error ) {
-                toast.error("Failed to load workspace details");
-                navigate("/dashboard");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchWorkspaceDetails();
-    }, [id]);
+  useEffect(() => {
+    const fetchWorkspaceDetails = async () => {
+      try {
+        const res = await api.get(`/workspaces/${id}`);
+        setWorkspace(res.data.workspace);
+        setMembers(res.data.members);
+      } catch (error) {
+        console.error("Failed to load workspace details:", error);
+        toast.error("Failed to load workspace details");
+        navigate("/dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWorkspaceDetails();
+  }, [id]);
 
-    const avatarLetter = user?.username?.charAt(0).toUpperCase() || "U";
+  const avatarLetter = user?.username?.charAt(0).toUpperCase() || "U";
 
-     if (loading) {
+  if (loading) {
     return (
       <div className={styles["detail-layout"]}>
         <Sidebar onNewWorkspace={() => navigate("/dashboard")} />
@@ -48,18 +56,19 @@ export default function WorkspaceDetail() {
       </div>
     );
   }
- return (
+  return (
     <div className={styles["detail-layout"]}>
       <Sidebar onNewWorkspace={() => navigate("/dashboard")} />
 
       <div className={styles["detail-body"]}>
-
         {/* Top navbar */}
         <nav className={styles["detail-nav"]}>
           <span className={styles["nav-page-title"]}>{workspace.name}</span>
           <div className={styles["nav-user"]}>
             <div className={styles["user-avatar"]}>{avatarLetter}</div>
-            <span className={styles["user-greeting"]}>Welcome, {user?.username}</span>
+            <span className={styles["user-greeting"]}>
+              Welcome, {user?.username}
+            </span>
             <button className={styles["logout-btn"]} onClick={handleLogout}>
               <HiLogout /> Logout
             </button>
@@ -67,7 +76,6 @@ export default function WorkspaceDetail() {
         </nav>
 
         <main className={styles["detail-main"]}>
-
           {/* Workspace header */}
           <header className={styles["detail-header"]}>
             <div>
@@ -78,7 +86,12 @@ export default function WorkspaceDetail() {
             </div>
             <div className={styles["header-meta"]}>
               <span className={styles["meta-tag"]}>
-                📅 Created {new Date(workspace.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                📅 Created{" "}
+                {new Date(workspace.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
               </span>
               <span className={styles["meta-tag"]}>
                 👥 {members.length} member{members.length !== 1 ? "s" : ""}
@@ -88,7 +101,33 @@ export default function WorkspaceDetail() {
 
           {/* Members section */}
           <section className={styles["members-section"]}>
-            <h2 className={styles["section-title"]}>Members</h2>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <h2 className={styles["section-title"]} style={{ margin: 0 }}>
+                Members
+              </h2>
+              <button
+                onClick={() => setIsInviteModalOpen(true)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  background: "var(--accent-terracotta)",
+                  color: "var(--text-secondary)",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "600",
+                }}
+              >
+                + Invite Member
+              </button>
+            </div>
+
             <div className={styles["members-list"]}>
               {members.map((member) => (
                 <div key={member.id} className={styles["member-row"]}>
@@ -96,24 +135,38 @@ export default function WorkspaceDetail() {
                     {member.username.charAt(0).toUpperCase()}
                   </div>
                   <div className={styles["member-info"]}>
-                    <span className={styles["member-name"]}>{member.username}</span>
-                    <span className={styles["member-email"]}>{member.email}</span>
+                    <span className={styles["member-name"]}>
+                      {member.username}
+                    </span>
+                    <span className={styles["member-email"]}>
+                      {member.email}
+                    </span>
                   </div>
-                  <span className={`${styles["role-badge"]} ${styles[member.role.toLowerCase()]}`}>
+                  <span
+                    className={`${styles["role-badge"]} ${styles[member.role.toLowerCase()]}`}
+                  >
                     {member.role.toUpperCase()}
                   </span>
                   <span className={styles["member-joined"]}>
-                    Joined {new Date(member.joinedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    Joined{" "}
+                    {new Date(member.joinedAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
                   </span>
                 </div>
               ))}
             </div>
           </section>
-
         </main>
       </div>
+      <InviteMemberModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        workspaceId={id}
+        onMemberAdded={handleMemberAdded}
+      />
     </div>
   );
 }
-
-
