@@ -29,3 +29,5 @@
 *.njsproj
 *.sln
 *.session.sql
+
+PULSE_CONTEXT.md

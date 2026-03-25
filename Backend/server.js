@@ -9,7 +9,8 @@ import 'dotenv/config';
 import User from './models/User.js';
 import Workspace from './models/Workspace.js';
 import WorkspaceMember from './models/WorkspaceMember.js';
-import workspaceRoutes from './routes/workspaceRoutes.js'; // <--- ADD THIS LINE
+import workspaceRoutes from './routes/workspaceRoutes.js';
+import Task from './models/Task.js';
 
 
 
@@ -26,6 +27,15 @@ User.hasMany(WorkspaceMember, { foreignKey: 'userId' });
 WorkspaceMember.belongsTo(User, { foreignKey: 'userId' });
 Workspace.hasMany(WorkspaceMember, { foreignKey: 'workspaceId' });
 WorkspaceMember.belongsTo(Workspace, { foreignKey: 'workspaceId' });
+Workspace.hasMany(Task, {
+    foreignKey: 'workspaceId',
+    onDelete: 'CASCADE'
+});
+Task.belongsTo(Workspace, { foreignKey: 'workspaceId' })
+
+User.hasMany(Task, { foreignKey: 'assignedTo', onDelete: 'SET NULL' });
+Task.belongsTo(User, { as: 'Assignee', foreignKey: 'assignedTo' });
+
 // ---------------------------------------------------------
 
 const app = express();
