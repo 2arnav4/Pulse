@@ -35,6 +35,23 @@ export default function TaskBoard({ workspaceId, members }) {
     setTasks((prev) => [...prev, newTask]);
   };
 
+  // C. Update Task Status
+  const handleStatusChange = async (taskId, newStatus) => {
+    try {
+      // Optimistically update the UI instantly
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === taskId ? { ...task, status: newStatus } : task
+        )
+      );
+      // Wait for backend to confirm
+      await api.put(`/workspaces/${workspaceId}/tasks/${taskId}`, { status: newStatus });
+      toast.success("Task updated!");
+    } catch (error) {
+      toast.error("Failed to update task");
+    }
+  };
+
   const columns = ["todo", "in-progress", "done"];
 
   if (loading) return <div style={{ marginTop: "20px" }}>Loading tasks...</div>;
@@ -95,7 +112,25 @@ export default function TaskBoard({ workspaceId, members }) {
                     </div>
                   )}
 
-                  <div className={styles["task-footer"]}>
+                  <div className={styles["task-footer"]} style={{ justifyContent: "space-between", alignItems: "center" }}>
+                    <select
+                      value={task.status}
+                      onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                      style={{
+                        padding: "4px 8px",
+                        borderRadius: "4px",
+                        border: "1px solid var(--border)",
+                        fontSize: "0.75rem",
+                        color: "var(--text-secondary)",
+                        cursor: "pointer",
+                        background: "var(--input-bg)"
+                      }}
+                    >
+                      <option value="todo">Todo</option>
+                      <option value="in-progress">In Progress</option>
+                      <option value="done">Done</option>
+                    </select>
+
                     {task.Assignee ? (
                       <div
                         className={styles["assignee-avatar"]}

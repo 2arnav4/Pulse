@@ -57,3 +57,30 @@ export async function createTask(req, res) {
         res.status(500).json({ message: "Failed to create task" });
     }
 }
+
+// 3.  UPDATE TASK STATUS
+export async function updateTaskStatus(req, res) {
+    try {
+        const { id: workspaceId, taskId } = req.params;
+        const { status } = req.body;
+        const userId = req.user.id;
+
+        // Security check: Must be in workspace
+        if (!(await isUserInWorkspace(userId, workspaceId))) {
+            return res.status(403).json({ message: "Access denied. You are not a member" });
+        }
+
+        // Update the task status
+        const task = await Task.findOne({ where: { id: taskId, workspaceId } });
+        if (!task) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+        task.status = status;
+        await task.save();
+
+        res.json(task);
+    } catch (error) {
+        console.error("Error updating task status:", error);
+        res.status(500).json({ message: "Failed to update task status" });
+    }
+}

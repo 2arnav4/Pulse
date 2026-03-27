@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { createWorkspace, getUserWorkspaces, getWorkspaceById, addMemberByEmail } from '../controllers/workspaceController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
-import { getWorkspaceTasks, createTask } from '../controllers/taskController.js';
+import { getWorkspaceTasks, createTask, updateTaskStatus } from '../controllers/taskController.js';
 
 
 const router = Router();
@@ -26,6 +26,9 @@ router.get('/:id/tasks', getWorkspaceTasks);
 
 // Route: POST /api/workspaces/:id/tasks (Create a new Kanban task)
 router.post('/:id/tasks', createTask);
+
+// Route: PUT /api/workspaces/:id/tasks/:taskId (Update existing task status)
+router.put('/:id/tasks/:taskId', updateTaskStatus);
 
 
 export default router;
