@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createWorkspace, getUserWorkspaces, getWorkspaceById, addMemberByEmail } from '../controllers/workspaceController.js';
+import { createWorkspace, getUserWorkspaces, getWorkspaceById, addMemberByEmail, removeMember, deleteWorkspace } from '../controllers/workspaceController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { getWorkspaceTasks, createTask, updateTaskStatus, generateStandup } from '../controllers/taskController.js';
 
@@ -33,6 +33,11 @@ router.put('/:id/tasks/:taskId', updateTaskStatus);
 // Route: GET /api/workspaces/:id/standup (Generate AI Standup)
 router.get('/:id/standup', generateStandup);
 
+// Route: DELETE /api/workspaces/:id/members/:userId (Remove member)
+router.delete('/:id/members/:userId', removeMember);
+
+// Route: DELETE /api/workspaces/:id (Nuke the active workspace)
+router.delete('/:id', deleteWorkspace);
 
 
 export default router;

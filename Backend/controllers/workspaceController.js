@@ -2,6 +2,7 @@ import Workspace from "../models/Workspace.js";
 import WorkspaceMember from "../models/WorkspaceMember.js";
 import User from '../models/User.js';
 import { sequelize } from "../config/database.js";
+import Task from "../models/Task.js";
 
 // 1. CREATE WORKSPACE
 export async function createWorkspace(req, res) {
@@ -203,5 +204,47 @@ export async function addMemberByEmail(req, res) {
   } catch (error) {
     console.error("Error adding member:", error);
     res.status(500).json({ message: "Server error while adding member" });
+  }
+}
+// REMOVE A MEMBER
+export async function removeMember(req, res) {
+  try {
+    const { id: workspaceId, userId } = req.params;
+    const reqUserId = req.user.id;
+
+    const isAdmin = await WorkspaceMember.findOne({
+      where: { userId: reqUserId, workspaceId, role: "admin" }
+    });
+    if (!isAdmin) return res.status(403).json({ message: "Only Admins can remove members" });
+
+    if (parseInt(reqUserId) === parseInt(userId)) return res.status(400).json({ message: "You cannot remove yourself" });
+
+    await WorkspaceMember.destroy({ where: { userId, workspaceId } });
+    await Task.update({ assignedTo: null }, { where: { workspaceId, assignedTo: userId } });
+
+    res.json({ message: "Member removed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to remove member" });
+  }
+}
+
+// DELETE WORKSPACE
+export async function deleteWorkspace(req, res) {
+  try {
+    const { id } = req.params;
+    const reqUserId = req.user.id;
+
+    const isAdmin = await WorkspaceMember.findOne({
+      where: { userId: reqUserId, workspaceId: id, role: "admin" }
+    });
+    if (!isAdmin) return res.status(403).json({ message: "Only Admins can delete the workspace" });
+
+    await Task.destroy({ where: { workspaceId: id } });
+    await WorkspaceMember.destroy({ where: { workspaceId: id } });
+    await Workspace.destroy({ where: { id } });
+
+    res.json({ message: "Workspace permanently deleted!" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete workspace" });
   }
 }
