@@ -8,6 +8,7 @@ import { HiLogout, HiUserCircle } from "react-icons/hi";
 import styles from "./WorkspaceDetail.module.css";
 import InviteMemberModal from "./InviteMemberModal";
 import TaskBoard from "./TaskBoard";
+import WorkspaceSettingsModal from "./WorkspaceSettingsModal";
 
 export default function WorkspaceDetail() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export default function WorkspaceDetail() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   const handleMemberAdded = (newMember) => {
     setMembers((prev) => [...prev, newMember]);
@@ -70,6 +72,12 @@ export default function WorkspaceDetail() {
             <span className={styles["user-greeting"]}>
               Welcome, {user?.username}
             </span>
+            <button
+              onClick={() => setIsSettingsModalOpen(true)}
+              style={{ padding: "6px 12px", borderRadius: "20px", background: "var(--bg-secondary)", border: "1px solid var(--border)", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontWeight: "600", color: "var(--text-secondary)" }}
+            >
+              ⚙️ Settings
+            </button>
             <button className={styles["logout-btn"]} onClick={handleLogout}>
               <HiLogout /> Logout
             </button>
@@ -168,6 +176,13 @@ export default function WorkspaceDetail() {
         onClose={() => setIsInviteModalOpen(false)}
         workspaceId={id}
         onMemberAdded={handleMemberAdded}
+      />
+      <WorkspaceSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        workspaceId={id}
+        members={members}
+        activeUserId={user?.id}
       />
     </div>
   );
