@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -6,23 +5,18 @@ import api from "../../services/api";
 import toast from "react-hot-toast";
 import styles from "./Dashboard.module.css";
 import {
-  HiHome,
-  HiFolder,
-  HiCheckCircle,
-  HiChartBar,
-  HiCog,
-  HiArrowRight,
+  HiPlus,
+  HiSearch,
   HiQuestionMarkCircle,
   HiLogout,
+  HiExternalLink,
 } from "react-icons/hi";
 
-// Rotating set of free placeholder images for workspace cards
 const COVER_IMAGES = [
-  "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop",
-  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop",
-  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=200&fit=crop",
-  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=200&fit=crop",
-  "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=200&fit=crop",
+  "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=300&fit=crop",
 ];
 
 export default function Dashboard() {
@@ -30,6 +24,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [workspaces, setWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
     logout();
@@ -46,7 +41,7 @@ export default function Dashboard() {
       try {
         const res = await api.get("/workspaces");
         setWorkspaces(res.data);
-      } catch (error) {
+      } catch {
         toast.error("Failed to load your workspaces.");
       } finally {
         setLoading(false);
@@ -66,137 +61,115 @@ export default function Dashboard() {
       window.removeEventListener("workspace-created", onWorkspaceCreated);
   }, []);
 
+  const filteredWorkspaces = workspaces.filter((space) =>
+    space.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   const avatarLetter = user?.username?.charAt(0).toUpperCase() || "U";
 
   return (
-    <div className={styles["dashboard-layout"]}>
-      {/* ── MAIN BODY ── */}
-      <div className={styles["dashboard-body"]}>
-        <nav className={styles["dashboard-nav"]}>
-          <span className={styles["nav-page-title"]}>Dashboard Overview</span>
-          <div className={styles["nav-user"]}>
-            <div className={styles["user-avatar"]}>{avatarLetter}</div>
-            <span className={styles["user-greeting"]}>
-              Welcome, {user?.username}
-            </span>
-            <button className={styles["logout-btn"]} onClick={handleLogout}>
-              <HiLogout /> Logout
+    <div className={styles["dashboard-container"]}>
+      <nav className={styles["dashboard-navbar"]}>
+        <div className={styles["nav-left"]}>
+          <div className={styles["logo-pulse"]}>P</div>
+          <span className={styles["nav-title"]}>Pulse</span>
+        </div>
+        <div className={styles["nav-right"]}>
+          <div className={styles["user-profile"]}>
+            <div className={styles["avatar"]}>{avatarLetter}</div>
+            <span className={styles["username"]}>{user?.username}</span>
+          </div>
+          <button className={styles["logout-btn"]} onClick={handleLogout}>
+            <HiLogout /> Logout
+          </button>
+        </div>
+      </nav>
+
+      <main className={styles["dashboard-content"]}>
+        <header className={styles["content-header"]}>
+          <div>
+            <h1 className={styles["main-title"]}>Your Workspaces</h1>
+            <p className={styles["main-subtitle"]}>Manage your projects and collaborate with your team.</p>
+          </div>
+          <div className={styles["header-actions"]}>
+            <div className={styles["search-box"]}>
+              <HiSearch className={styles["search-icon"]} />
+              <input
+                type="text"
+                placeholder="Find a workspace..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <button className={styles["create-button"]} onClick={openCreateWorkspaceModal}>
+              <HiPlus /> Create Workspace
             </button>
           </div>
-        </nav>
+        </header>
 
-        <main className={styles["dashboard-main"]}>
-          <header className={styles["dashboard-header"]}>
-            <h1 className={styles["header-title"]}>Your Workspaces</h1>
-            <p className={styles["header-subtitle"]}>
-              You are currently active in {workspaces.length} workspace
-              {workspaces.length !== 1 ? "s" : ""}.
-            </p>
-          </header>
-
-          {loading ? (
-            <div className={styles["workspace-grid"]}>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className={styles["skeleton-card"]}>
-                  <div
-                    className={`${styles["skeleton-cover"]} ${styles["skeleton"]}`}
-                  />
-                  <div className={styles["skeleton-body"]}>
-                    <div
-                      className={`${styles["skeleton-title"]} ${styles["skeleton"]}`}
-                    />
-                    <div
-                      className={`${styles["skeleton-subtitle"]} ${styles["skeleton"]}`}
-                    />
-                    <div
-                      className={`${styles["skeleton-footer"]} ${styles["skeleton"]}`}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : workspaces.length === 0 ? (
-            <div className={styles["empty-state"]}>
-              <div className={styles["empty-state-icon"]}>🗂️</div>
-              <h3 className={styles["empty-state-title"]}>No workspaces yet</h3>
-              <p className={styles["empty-state-text"]}>
-                Create your first workspace to start collaborating with your
-                team.
-              </p>
-              <button
-                className={styles["empty-state-btn"]}
-                onClick={openCreateWorkspaceModal}
-              >
-                + Create your first workspace
-              </button>
-            </div>
-          ) : (
-            <div className={styles["workspace-grid"]}>
-              {workspaces.map((space, index) => (
-                <div
-                  key={space.id}
-                  className={styles["workspace-card"]}
-                  onClick={() => handleEnterWorkspace(space.id)}
-                >
-                  <div className={styles["card-cover"]}>
-                    <img
-                      src={COVER_IMAGES[index % COVER_IMAGES.length]}
-                      alt={space.name}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                  <div className={styles["card-body"]}>
-                    <div className={styles["card-top"]}>
-                      <h3 className={styles["card-title"]}>{space.name}</h3>
-                      <span
-                        className={`${styles["role-badge"]} ${styles[space.role.toLowerCase()]}`}
-                      >
-                        {space.role.toUpperCase()}
-                      </span>
-                    </div>
-                    {space.description && (
-                      <p className={styles["card-description"]}>
-                        {space.description}
-                      </p>
-                    )}
-                    <div className={styles["card-bottom"]}>
-                      <div className={styles["member-count"]}>
-                        Created{" "}
-                        {new Date(space.joinedAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </div>
-                      <button className={styles["enter-btn"]}>
-                        Enter Workspace <HiArrowRight />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className={styles["help-banner"]}>
-            <div className={styles["help-icon"]}>
-              <HiQuestionMarkCircle size={20} />
-            </div>
-            <div className={styles["help-text"]}>
-              <strong>Need help with workspaces?</strong>
-              <span>Read our documentation or contact the support team.</span>
-            </div>
-            <div className={styles["help-actions"]}>
-              <button className={styles["help-btn"]}>Documentation</button>
-              <span className={styles["help-link"]}>Contact Support</span>
-            </div>
+        {loading ? (
+          <div className={styles["loading-state"]}>
+             <div className={styles["spinner"]}></div>
+             <p>Assembling your workspaces...</p>
           </div>
-        </main>
-      </div>
+        ) : filteredWorkspaces.length === 0 ? (
+          <div className={styles["empty-state"]}>
+            <div className={styles["empty-icon"]}>📂</div>
+            <h3>{searchQuery ? "No matching workspaces" : "No workspaces yet"}</h3>
+            <p>{searchQuery ? "Try a different keyword." : "Get started by creating your first workspace."}</p>
+            {!searchQuery && (
+               <button onClick={openCreateWorkspaceModal} className={styles["create-button"]}>
+                 + Create Workspace
+               </button>
+            )}
+          </div>
+        ) : (
+          <div className={styles["workspace-grid"]}>
+            {filteredWorkspaces.map((space, index) => (
+              <div
+                key={space.id}
+                className={styles["workspace-card"]}
+                onClick={() => handleEnterWorkspace(space.id)}
+              >
+                <div className={styles["card-image-wrapper"]}>
+                  <img
+                    src={COVER_IMAGES[index % COVER_IMAGES.length]}
+                    alt={space.name}
+                  />
+                  <div className={styles["card-overlay"]}>
+                    <span>Enter Workspace</span>
+                  </div>
+                </div>
+                <div className={styles["card-details"]}>
+                  <div className={styles["card-header"]}>
+                    <h3 className={styles["card-title"]}>{space.name}</h3>
+                    <span className={styles["role-tag"]}>{space.role}</span>
+                  </div>
+                  <p className={styles["card-desc"]}>{space.description || "Project collaboration space"}</p>
+                  <div className={styles["card-footer"]}>
+                    <span className={styles["card-date"]}>Created {new Date(space.joinedAt).toLocaleDateString()}</span>
+                    <HiExternalLink className={styles["go-icon"]} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <section className={styles["support-banner"]}>
+           <div className={styles["support-icon"]}>
+             <HiQuestionMarkCircle size={24} />
+           </div>
+           <div className={styles["support-text"]}>
+             <h4>Need assistance?</h4>
+             <p>Our documentation and support team are here to help you get the most out of Pulse.</p>
+           </div>
+           <div className={styles["support-btns"]}>
+             <button className={styles["support-link"]}>Documentation</button>
+             <button className={styles["support-link-alt"]}>Contact Us</button>
+           </div>
+        </section>
+      </main>
     </div>
   );
 }

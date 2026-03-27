@@ -6,8 +6,9 @@
 
 .mainContent {
   flex: 1;
-  margin-left: 220px; /* Space for the 220px fixed sidebar */
+  margin-left: 240px; /* Space for the 240px fixed sidebar */
   display: flex;
   flex-direction: column;
   position: relative;
+  min-height: 100vh;
 }

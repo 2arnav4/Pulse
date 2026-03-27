@@ -46,7 +46,9 @@ export default function WorkspaceDetail() {
       }
     };
     fetchWorkspaceDetails();
-  }, [id]);
+  }, [id, navigate]);
+
+  const [activeTab, setActiveTab] = useState("board");
 
   const avatarLetter = user?.username?.charAt(0).toUpperCase() || "U";
 
@@ -59,60 +61,13 @@ export default function WorkspaceDetail() {
       </div>
     );
   }
-  return (
-    <div className={styles["detail-layout"]}>
-      <div className={styles["detail-body"]}>
-        {/* Top navbar */}
-        <nav className={styles["detail-nav"]}>
-          <span className={styles["nav-page-title"]}>{workspace.name}</span>
-          <div className={styles["nav-user"]}>
-            <div className={styles["user-avatar"]}>{avatarLetter}</div>
-            <span className={styles["user-greeting"]}>
-              Welcome, {user?.username}
-            </span>
-            <button
-              onClick={() => setIsStandupModalOpen(true)}
-              style={{ padding: "6px 12px", borderRadius: "20px", background: "var(--accent-light)", border: `1px solid var(--accent)`, cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontWeight: "600", color: "var(--accent)" }}
-            >
-              🤖 AI Standup
-            </button>
-            <button
-              onClick={() => setIsSettingsModalOpen(true)}
-              style={{ padding: "6px 12px", borderRadius: "20px", background: "var(--bg-secondary)", border: "1px solid var(--border)", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontWeight: "600", color: "var(--text-secondary)" }}
-            >
-              ⚙️ Settings
-            </button>
-            <button className={styles["logout-btn"]} onClick={handleLogout}>
-              <HiLogout /> Logout
-            </button>
-          </div>
-        </nav>
 
-        <main className={styles["detail-main"]}>
-          {/* Workspace header */}
-          <header className={styles["detail-header"]}>
-            <div>
-              <h1 className={styles["header-title"]}>{workspace.name}</h1>
-              <p className={styles["header-subtitle"]}>
-                {workspace.description || "No description provided."}
-              </p>
-            </div>
-            <div className={styles["header-meta"]}>
-              <span className={styles["meta-tag"]}>
-                📅 Created{" "}
-                {new Date(workspace.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
-              <span className={styles["meta-tag"]}>
-                👥 {members.length} member{members.length !== 1 ? "s" : ""}
-              </span>
-            </div>
-          </header>
-
-          {/* Members section */}
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "board":
+        return <TaskBoard workspaceId={id} members={members} />;
+      case "members":
+        return (
           <section className={styles["members-section"]}>
             <div
               style={{
@@ -123,19 +78,11 @@ export default function WorkspaceDetail() {
               }}
             >
               <h2 className={styles["section-title"]} style={{ margin: 0 }}>
-                Members
+                Manage Team
               </h2>
               <button
                 onClick={() => setIsInviteModalOpen(true)}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: "8px",
-                  background: "var(--accent)",
-                  color: "var(--text-secondary)",
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                }}
+                className={styles["primary-btn"]}
               >
                 + Invite Member
               </button>
@@ -172,7 +119,78 @@ export default function WorkspaceDetail() {
               ))}
             </div>
           </section>
-          <TaskBoard workspaceId={id} members={members} />
+        );
+      case "settings":
+        return (
+          <div className={styles["settings-view"]}>
+             <h2 className={styles["section-title"]}>Workspace Settings</h2>
+             <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>Management options for {workspace.name}</p>
+             <button 
+                onClick={() => setIsSettingsModalOpen(true)} 
+                className={styles["secondary-btn"]}
+                style={{ width: "fit-content" }}
+             >
+               Open Full Settings
+             </button>
+          </div>
+        );
+      default:
+        return <TaskBoard workspaceId={id} members={members} />;
+    }
+  };
+
+  return (
+    <div className={styles["detail-layout"]}>
+      <div className={styles["detail-body"]}>
+        {/* Jira-style Top Bar */}
+        <header className={styles["workspace-top-bar"]}>
+          <div className={styles["title-area"]}>
+             <div className={styles["workspace-icon"]}>{workspace.name.charAt(0)}</div>
+             <div className={styles["title-info"]}>
+                <h1 className={styles["workspace-name"]}>{workspace.name}</h1>
+                <span className={styles["workspace-type"]}>Software Project</span>
+             </div>
+          </div>
+          
+          <div className={styles["top-actions"]}>
+            <button
+              onClick={() => setIsStandupModalOpen(true)}
+              className={styles["ai-btn"]}
+            >
+              AI Standup
+            </button>
+            <div className={styles["user-pill"]}>
+               <div className={styles["user-avatar-sm"]}>{avatarLetter}</div>
+               <button className={styles["logout-link"]} onClick={handleLogout}>
+                 <HiLogout size={14} />
+               </button>
+            </div>
+          </div>
+        </header>
+
+        <nav className={styles["workspace-nav-tabs"]}>
+          <button 
+            className={`${styles["nav-tab"]} ${activeTab === "board" ? styles["active"] : ""}`}
+            onClick={() => setActiveTab("board")}
+          >
+            Board
+          </button>
+          <button 
+            className={`${styles["nav-tab"]} ${activeTab === "members" ? styles["active"] : ""}`}
+            onClick={() => setActiveTab("members")}
+          >
+            Members
+          </button>
+          <button 
+            className={`${styles["nav-tab"]} ${activeTab === "settings" ? styles["active"] : ""}`}
+            onClick={() => setActiveTab("settings")}
+          >
+            Settings
+          </button>
+        </nav>
+
+        <main className={styles["detail-main"]}>
+          {renderTabContent()}
         </main>
       </div>
       <InviteMemberModal

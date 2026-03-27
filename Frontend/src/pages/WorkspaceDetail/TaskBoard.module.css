@@ -9,8 +9,8 @@
 .column {
     flex: 1;
     min-width: 300px;
-    background: #fdfbf7;
-    border: 1px solid rgba(203, 153, 126, 0.2);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
     border-radius: 12px;
     padding: 16px;
     display: flex;
@@ -29,11 +29,11 @@
 }
 
 .task-card {
-    background: #ffffff;
-    border: 1px solid rgba(203, 153, 126, 0.3);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
     border-radius: 8px;
     padding: 14px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--shadow-card);
     cursor: pointer;
     transition: transform 0.2s;
 }
