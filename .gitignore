@@ -31,3 +31,5 @@
 *.session.sql
 
 PULSE_CONTEXT.md
+
+.vscode
