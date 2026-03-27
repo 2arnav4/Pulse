@@ -1,73 +1,86 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 :root {
-    /* Core palette — warm parchment */
-    --bg-primary: #eee9e1;
-    --bg-secondary: #e5dfd6;
-    --bg-sidebar: #e8e2d9;
-    --bg-card: #ffffff;
+  /* Backgrounds */
+  --bg-base: #111111;
+  --bg-surface: #1E1E1E;
+  --bg-elevated: #262626;
 
-    /* Text */
-    --text-main: #1c1612;
-    --text-secondary: #5a4f47;
-    --text-muted: #9c8e85;
+  /* Legacy aliases used by existing CSS modules */
+  --bg-primary: var(--bg-base);
+  --bg-secondary: var(--bg-surface);
+  --bg-sidebar: var(--bg-surface);
+  --bg-card: var(--bg-elevated);
 
-    /* Accent — muted terracotta */
-    --accent: #b07165;
-    --accent-hover: #9a5f54;
-    --accent-light: rgba(176, 113, 101, 0.12);
-    --accent-shadow: rgba(176, 113, 101, 0.25);
+  /* Accents */
+  --accent-primary: #8b5cf6;
+  --accent-primary-dim: rgba(139, 92, 246, 0.15);
+  --accent-ai: #00ffcc;
+  --accent-ai-dim: rgba(0, 255, 204, 0.12);
+  --accent-danger: #ef4444;
+  --accent-danger-dim: rgba(239, 68, 68, 0.12);
+  --accent-warning: #f59e0b;
 
-    /* Borders */
-    --border: rgba(90, 79, 71, 0.12);
-    --border-strong: rgba(90, 79, 71, 0.22);
+  /* Legacy aliases used by existing CSS modules */
+  --accent: var(--accent-primary);
+  --accent-hover: rgba(139, 92, 246, 0.22);
+  --accent-shadow: rgba(139, 92, 246, 0.25);
+  --accent-light: var(--accent-primary-dim);
+  --accent-terracotta: #f59e0b;
 
-    /* Inputs */
-    --input-bg: #f5f1ec;
-    --input-border: rgba(90, 79, 71, 0.18);
-    --input-focus: rgba(176, 113, 101, 0.3);
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
 
-    /* Glass */
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(176, 113, 101, 0.15);
+  /* Legacy aliases used by existing CSS modules */
+  --text-main: var(--text-primary);
 
-    /* Functional */
-    --brand-gradient: linear-gradient(135deg, #b07165 0%, #c98f82 100%);
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
+  /* Borders */
+  --border-default: #27272a;
+  --border-subtle: #3f3f46;
+
+  /* Legacy aliases used by existing CSS modules */
+  --border: var(--border-default);
+  --border-strong: var(--border-subtle);
+
+  /* Typography */
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Shadows */
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-glow-primary: 0 0 20px rgba(139, 92, 246, 0.3);
+  --shadow-glow-ai: 0 0 20px rgba(0, 255, 204, 0.2);
+
+  /* Inputs */
+  --input-bg: var(--bg-secondary);
+  --input-border: var(--border-default);
+  --input-focus: rgba(139, 92, 246, 0.35);
 }
 
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: 'DM Sans', -apple-system, sans-serif;
-    background-color: var(--bg-primary);
-    color: var(--text-main);
-    min-height: 100vh;
-    line-height: 1.5;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-button {
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-}
-
-input, textarea {
-    font-family: 'DM Sans', sans-serif;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-}
+/* Hide scrollbar but keep scroll */
+::-webkit-scrollbar { width: 0; }

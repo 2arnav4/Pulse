@@ -4,9 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
-import CreateWorkspaceModal from "./CreateWorkspaceModal";
 import styles from "./Dashboard.module.css";
-import Sidebar from "../../components/Sidebar";
 import {
   HiHome,
   HiFolder,
@@ -32,18 +30,16 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [workspaces, setWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
-  const handleCreateClick = () => setIsModalOpen(true);
-  const handleWorkspaceCreated = (newSpace) => {
-    setWorkspaces((prev) => [...prev, newSpace]);
-    setIsModalOpen(false);
-  };
   const handleEnterWorkspace = (id) => navigate(`/workspace/${id}`);
+
+  const openCreateWorkspaceModal = () => {
+    window.dispatchEvent(new CustomEvent("open-create-workspace"));
+  };
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -59,18 +55,21 @@ export default function Dashboard() {
     fetchWorkspaces();
   }, []);
 
+  useEffect(() => {
+    const onWorkspaceCreated = (event) => {
+      const newSpace = event.detail;
+      if (!newSpace?.id) return;
+      setWorkspaces((prev) => [...prev, newSpace]);
+    };
+    window.addEventListener("workspace-created", onWorkspaceCreated);
+    return () =>
+      window.removeEventListener("workspace-created", onWorkspaceCreated);
+  }, []);
+
   const avatarLetter = user?.username?.charAt(0).toUpperCase() || "U";
 
   return (
     <div className={styles["dashboard-layout"]}>
-      <CreateWorkspaceModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onWorkspaceCreated={handleWorkspaceCreated}
-      />
-
-      <Sidebar onNewWorkspace={handleCreateClick} />
-
       {/* ── MAIN BODY ── */}
       <div className={styles["dashboard-body"]}>
         <nav className={styles["dashboard-nav"]}>
@@ -126,7 +125,7 @@ export default function Dashboard() {
               </p>
               <button
                 className={styles["empty-state-btn"]}
-                onClick={handleCreateClick}
+                onClick={openCreateWorkspaceModal}
               >
                 + Create your first workspace
               </button>

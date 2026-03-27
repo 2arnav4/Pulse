@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
-import Sidebar from "../../components/Sidebar";
 import { HiLogout, HiUserCircle } from "react-icons/hi";
 import styles from "./WorkspaceDetail.module.css";
 import InviteMemberModal from "./InviteMemberModal";
@@ -54,7 +53,6 @@ export default function WorkspaceDetail() {
   if (loading) {
     return (
       <div className={styles["detail-layout"]}>
-        <Sidebar onNewWorkspace={() => navigate("/dashboard")} />
         <div className={styles["detail-body"]}>
           <div className={styles["loading"]}>Loading workspace...</div>
         </div>
@@ -63,8 +61,6 @@ export default function WorkspaceDetail() {
   }
   return (
     <div className={styles["detail-layout"]}>
-      <Sidebar onNewWorkspace={() => navigate("/dashboard")} />
-
       <div className={styles["detail-body"]}>
         {/* Top navbar */}
         <nav className={styles["detail-nav"]}>

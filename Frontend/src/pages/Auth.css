@@ -33,7 +33,7 @@
 }
 
 .auth-logo-name {
-    font-family: 'Fraunces', serif;
+    font-family: var(--font-display);
     font-size: 20px;
     font-weight: 600;
     color: var(--text-main);
@@ -59,7 +59,7 @@
 }
 
 .auth-card-title {
-    font-family: 'Fraunces', serif;
+    font-family: var(--font-display);
     font-size: 26px;
     font-weight: 600;
     color: var(--text-main);

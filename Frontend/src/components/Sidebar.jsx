@@ -1,56 +1,62 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import {
-  HiHome,
-  HiFolder,
-  HiCheckCircle,
-  HiChartBar,
-  HiCog,
-} from "react-icons/hi";
+import { Link, useLocation } from "react-router-dom";
+import { Home, FolderOpen, CheckSquare, BarChart2, Settings, Plus } from "lucide-react";
 import styles from "./Sidebar.module.css";
 
 export default function Sidebar({ onNewWorkspace }) {
-  const navigate = useNavigate();
   const location = useLocation();
-  const isActive = (path) => location.pathname === path;
+  
+  // Extract workspace ID from URL if present
+  const match = location.pathname.match(/\/workspace\/([^/]+)/);
+  const workspaceId = match ? match[1] : null;
+
+  const getWorkspacePath = (suffix) => {
+    return workspaceId ? `/workspace/${workspaceId}${suffix}` : "/dashboard";
+  };
+
+  const navItems = [
+    { name: "Home", icon: Home, path: "/dashboard" },
+    { name: "Projects", icon: FolderOpen, path: "/dashboard" },
+    { name: "Tasks", icon: CheckSquare, path: getWorkspacePath("") },
+    { name: "Analytics", icon: BarChart2, path: getWorkspacePath("/analytics") },
+    { name: "Settings", icon: Settings, path: getWorkspacePath("/settings") },
+  ];
+
+  const isActive = (path) => {
+    if (path === "/dashboard") {
+      return location.pathname === "/dashboard";
+    }
+    return location.pathname === path;
+  };
 
   return (
-    <aside className={styles["sidebar"]}>
-      <div className={styles["sidebar-brand"]}>
-        <div className={styles["brand-logo"]}>⚡</div>
-        <div className={styles["brand-info"]}>
-          <span className={styles["brand-text"]}>Pulse Workspace</span>
-          <span className={styles["brand-plan"]}>Enterprise Plan</span>
+    <aside className={styles.sidebar}>
+      <div className={styles.brand}>
+        <div className={styles.logo}>⚡</div>
+        <div className={styles.brandText}>
+          <span className={styles.title}>Pulse</span>
+          <span className={styles.subtitle}>Workspace</span>
         </div>
       </div>
 
-      <nav className={styles["sidebar-nav"]}>
-        <button
-          className={`${styles["nav-item"]} ${isActive("/dashboard") ? styles["active"] : ""}`}
-          onClick={() => navigate("/dashboard")}
-        >
-          <HiHome className={styles["nav-icon"]} /> Home
-        </button>
-        <button className={styles["nav-item"]}>
-          <HiFolder className={styles["nav-icon"]} /> Projects
-        </button>
-        <button className={styles["nav-item"]}>
-          <HiCheckCircle className={styles["nav-icon"]} /> Tasks
-        </button>
-        <button className={styles["nav-item"]}>
-          <HiChartBar className={styles["nav-icon"]} /> Analytics
-        </button>
-        <button className={styles["nav-item"]}>
-          <HiCog className={styles["nav-icon"]} /> Settings
-        </button>
+      <nav className={styles.nav}>
+        {navItems.map((item) => {
+          const active = isActive(item.path);
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`${styles.navItem} ${active ? styles.active : ""}`}
+            >
+              <item.icon className={styles.icon} size={20} />
+              {item.name}
+            </Link>
+          );
+        })}
       </nav>
 
-      <div className={styles["sidebar-footer"]}>
-        <button
-          className={styles["new-workspace-btn"]}
-          onClick={onNewWorkspace}
-        >
-          + New Workspace
+      <div className={styles.footer}>
+        <button className={styles.newWorkspaceBtn} onClick={onNewWorkspace}>
+          <Plus size={18} /> New Workspace
         </button>
       </div>
     </aside>
