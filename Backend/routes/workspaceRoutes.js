@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { createWorkspace, getUserWorkspaces, getWorkspaceById, addMemberByEmail } from '../controllers/workspaceController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
-import { getWorkspaceTasks, createTask, updateTaskStatus } from '../controllers/taskController.js';
+import { getWorkspaceTasks, createTask, updateTaskStatus, generateStandup } from '../controllers/taskController.js';
 
 
 const router = Router();
@@ -29,6 +29,10 @@ router.post('/:id/tasks', createTask);
 
 // Route: PUT /api/workspaces/:id/tasks/:taskId (Update existing task status)
 router.put('/:id/tasks/:taskId', updateTaskStatus);
+
+// Route: GET /api/workspaces/:id/standup (Generate AI Standup)
+router.get('/:id/standup', generateStandup);
+
 
 
 export default router;

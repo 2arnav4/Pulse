@@ -1,6 +1,11 @@
 import Task from "../models/Task.js";
 import WorkspaceMember from "../models/WorkspaceMember.js";
 import User from "../models/User.js";
+import { Op } from "sequelize";
+import Groq from "groq-sdk";
+
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Helper Function: Ensure hacker can't view private workspace tasks
 const isUserInWorkspace = async (userId, workspaceId) => {
@@ -84,3 +89,63 @@ export async function updateTaskStatus(req, res) {
         res.status(500).json({ message: "Failed to update task status" });
     }
 }
+
+export const generateStandup = async (req, res) => {
+    try {
+        const { id: workspaceId } = req.params;
+
+        // Fetch tasks updated in last 24 hours
+        const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+        const tasks = await Task.findAll({
+            where: {
+                workspaceId,
+                updatedAt: { [Op.gte]: since },
+            },
+            include: [
+                {
+                    model: User,
+                    as: "Assignee", // NOTE: Your association is called "Assignee" with a capital A!
+                    attributes: ["id", "username", "email"], // NOTE: You use username, not name!
+                },
+            ],
+        });
+
+        if (tasks.length === 0) {
+            return res.json({ standup: "No tasks were updated in the last 24 hours for this workspace." });
+        }
+
+        // Group tasks by assigned user
+        const grouped = {};
+        tasks.forEach((task) => {
+            const name = task.Assignee ? task.Assignee.username : "Unassigned";
+            if (!grouped[name]) grouped[name] = [];
+            grouped[name].push(`- [${task.status}] ${task.title}`);
+        });
+
+        // Build the Prompt
+        const taskSummaryText = Object.entries(grouped)
+            .map(([name, items]) => `${name}:\n${items.join("\n")}`)
+            .join("\n\n");
+
+        const prompt = `You are a project management assistant. Based on the following task activity from the last 24 hours, generate a concise daily standup report for the team. For each person, mention what they worked on and what the current status is. Keep it extremely brief and professional.
+
+Task Activity:
+${taskSummaryText}
+
+Generate the standup report now:`.trim();
+
+        // Call Groq API
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "llama3-8b-8192",
+            max_tokens: 500,
+        });
+
+        const standup = chatCompletion.choices[0]?.message?.content || "Could not generate standup.";
+        return res.json({ standup });
+    } catch (error) {
+        console.error("Standup generation error:", error);
+        return res.status(500).json({ message: "Failed to generate standup." });
+    }
+};

@@ -9,6 +9,7 @@ import styles from "./WorkspaceDetail.module.css";
 import InviteMemberModal from "./InviteMemberModal";
 import TaskBoard from "./TaskBoard";
 import WorkspaceSettingsModal from "./WorkspaceSettingsModal";
+import StandupModal from "./StandupModal";
 
 export default function WorkspaceDetail() {
   const { id } = useParams();
@@ -20,6 +21,7 @@ export default function WorkspaceDetail() {
   const [loading, setLoading] = useState(true);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isStandupModalOpen, setIsStandupModalOpen] = useState(false);
 
   const handleMemberAdded = (newMember) => {
     setMembers((prev) => [...prev, newMember]);
@@ -72,6 +74,12 @@ export default function WorkspaceDetail() {
             <span className={styles["user-greeting"]}>
               Welcome, {user?.username}
             </span>
+            <button
+              onClick={() => setIsStandupModalOpen(true)}
+              style={{ padding: "6px 12px", borderRadius: "20px", background: "var(--accent-light)", border: `1px solid var(--accent)`, cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontWeight: "600", color: "var(--accent)" }}
+            >
+              🤖 AI Standup
+            </button>
             <button
               onClick={() => setIsSettingsModalOpen(true)}
               style={{ padding: "6px 12px", borderRadius: "20px", background: "var(--bg-secondary)", border: "1px solid var(--border)", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontWeight: "600", color: "var(--text-secondary)" }}
@@ -183,6 +191,11 @@ export default function WorkspaceDetail() {
         workspaceId={id}
         members={members}
         activeUserId={user?.id}
+      />
+      <StandupModal
+        isOpen={isStandupModalOpen}
+        onClose={() => setIsStandupModalOpen(false)}
+        workspaceId={id}
       />
     </div>
   );
