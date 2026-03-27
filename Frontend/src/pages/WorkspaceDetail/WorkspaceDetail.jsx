@@ -7,6 +7,7 @@ import Sidebar from "../../components/Sidebar";
 import { HiLogout, HiUserCircle } from "react-icons/hi";
 import styles from "./WorkspaceDetail.module.css";
 import InviteMemberModal from "./InviteMemberModal";
+import TaskBoard from "./TaskBoard";
 
 export default function WorkspaceDetail() {
   const { id } = useParams();
@@ -117,7 +118,7 @@ export default function WorkspaceDetail() {
                 style={{
                   padding: "8px 16px",
                   borderRadius: "8px",
-                  background: "var(--accent-terracotta)",
+                  background: "var(--accent)",
                   color: "var(--text-secondary)",
                   border: "none",
                   cursor: "pointer",
@@ -159,6 +160,7 @@ export default function WorkspaceDetail() {
               ))}
             </div>
           </section>
+          <TaskBoard workspaceId={id} members={members} />
         </main>
       </div>
       <InviteMemberModal
