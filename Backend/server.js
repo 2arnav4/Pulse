@@ -48,10 +48,20 @@ sequelize.sync({ alter: true })
     .catch((err) => console.log('Database sync error', err));
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: function(origin, callback) {
+        const allowed = [
+            'http://localhost:5173',
+            process.env.FRONTEND_URL,
+        ].filter(Boolean);
+        if (!origin || allowed.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true // <-- THIS explicitly allows 'Bearer token' auth!
+    credentials: true,
 }));
 
 app.use(json());
