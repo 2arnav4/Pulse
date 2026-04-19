@@ -51,6 +51,7 @@ app.use(cors({
     origin: function(origin, callback) {
         const allowed = [
             'http://localhost:5173',
+            'https://pulse-nu-liard.vercel.app',
             process.env.FRONTEND_URL,
         ].filter(Boolean);
         if (!origin || allowed.includes(origin)) {
