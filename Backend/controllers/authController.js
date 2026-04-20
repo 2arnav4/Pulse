@@ -3,11 +3,18 @@ import bcryptjs from 'bcryptjs';
 const { genSalt, hash, compare } = bcryptjs;
 import jwt from 'jsonwebtoken';
 const { sign } = jwt;
+import { validationResult } from 'express-validator';
 
 
 // 1. REGISTER USER
 export async function register(req, res) {
     try {
+        // Check for validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
         //Get Data from the frontend request
         const { username, email, password } = req.body;
 
@@ -51,6 +58,12 @@ export async function register(req, res) {
 // 2. LOGIN USER 
 export async function login(req, res) {
     try {
+        // Check for validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
         const { email, password } = req.body;
         // Find user by email
         const user = await User.findOne({ where: { email } })
