@@ -451,3 +451,47 @@
   background: var(--border-default);
   border-color: var(--accent-primary);
 }
+
+@media (max-width: 768px) {
+  .dashboard-navbar {
+    padding: 16px;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .nav-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .dashboard-content {
+    padding: 24px 16px;
+  }
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .search-box {
+    width: 100%;
+  }
+  .main-title {
+    font-size: 32px;
+  }
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .support-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+  }
+  .support-btns {
+    justify-content: center;
+  }
+}

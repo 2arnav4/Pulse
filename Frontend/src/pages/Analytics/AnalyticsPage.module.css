@@ -283,3 +283,9 @@
   }
 }
 
+@media (max-width: 768px) {
+  .nav { padding: 16px; }
+  .grid { padding: 16px; }
+  .pageTitle { font-size: 24px; }
+}
+

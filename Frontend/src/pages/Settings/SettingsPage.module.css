@@ -297,3 +297,13 @@
   }
 }
 
+@media (max-width: 768px) {
+  .nav { padding: 16px; }
+  .content { padding: 16px 16px 0; }
+  .card { padding: 16px; }
+  .pageTitle { font-size: 24px; }
+  .actionsRow {
+    flex-wrap: wrap;
+  }
+}
+

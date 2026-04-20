@@ -12,3 +12,10 @@
   position: relative;
   min-height: 100vh;
 }
+
+@media (max-width: 768px) {
+  .mainContent {
+    margin-left: 0;
+    padding-bottom: 70px;
+  }
+}

@@ -84,3 +84,9 @@ body {
 
 /* Hide scrollbar but keep scroll */
 ::-webkit-scrollbar { width: 0; }
+
+@media (max-width: 768px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+  }
+}
