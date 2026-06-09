@@ -14,7 +14,7 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   
-  const { login, register } = useAuth();
+  const { login, register, enterDemoMode } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -130,6 +130,27 @@ export default function AuthPage() {
               {!isLoading && <ArrowRight size={18} />}
             </button>
           </form>
+
+          {isLogin && (
+            <>
+              <div className={styles.divider}>
+                <span>or</span>
+              </div>
+              <button
+                type="button"
+                className={styles.demoBtn}
+                onClick={() => {
+                  enterDemoMode();
+                  navigate("/dashboard");
+                }}
+              >
+                Try Demo — No Account Needed
+              </button>
+              <p className={styles.demoHint}>
+                Explore the full app with sample data. Changes won&apos;t be saved.
+              </p>
+            </>
+          )}
 
           <div className={styles.formFooter}>
             {isLogin ? "New here? " : "Already have an account? "}

@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import api from "../services/api";
+import { DEMO_USER, resetDemoStore } from "../services/demoStore";
 
 //Create Context
 export const AuthContext = createContext();
@@ -10,15 +11,23 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("Pulse_token"));
+  const [isDemoMode, setIsDemoMode] = useState(
+    localStorage.getItem("Pulse_demo_mode") === "true",
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. When app loads, check if we already have a token saved
     const loadUser = async () => {
+      if (localStorage.getItem("Pulse_demo_mode") === "true") {
+        setUser(DEMO_USER);
+        setIsDemoMode(true);
+        setLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem("Pulse_token");
       if (token) {
         try {
-          //Talk to the protected backend route we just built!
           const res = await api.get("/auth/me");
           setUser(res.data);
         } catch (error) {
@@ -26,37 +35,59 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("Pulse_token");
         }
       }
-      setLoading(false); // stop the laoding screen
+      setLoading(false);
     };
     loadUser();
   }, []);
 
-  // 2. login Logic
   const login = async (email, password) => {
+    localStorage.removeItem("Pulse_demo_mode");
+    setIsDemoMode(false);
     const res = await api.post("/auth/login", { email, password });
     localStorage.setItem("Pulse_token", res.data.token);
     setToken(res.data.token);
-    setUser(res.data.user); // Save token securely
-    // Save user data globally
+    setUser(res.data.user);
   };
 
-  // 3. Register Logic
   const register = async (username, email, password) => {
+    localStorage.removeItem("Pulse_demo_mode");
+    setIsDemoMode(false);
     const res = await api.post("/auth/register", { username, email, password });
-    localStorage.setItem("Pulse_token", res.data.token); // Save token securely
+    localStorage.setItem("Pulse_token", res.data.token);
     setToken(res.data.token);
-    setUser(res.data.user); // Save user data globally
+    setUser(res.data.user);
   };
 
-  // 4. Logout Logic
+  const enterDemoMode = () => {
+    resetDemoStore();
+    localStorage.removeItem("Pulse_token");
+    localStorage.setItem("Pulse_demo_mode", "true");
+    setToken(null);
+    setUser(DEMO_USER);
+    setIsDemoMode(true);
+  };
+
   const logout = () => {
     localStorage.removeItem("Pulse_token");
+    localStorage.removeItem("Pulse_demo_mode");
     setUser(null);
     setToken(null);
+    setIsDemoMode(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        isDemoMode,
+        login,
+        register,
+        logout,
+        enterDemoMode,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

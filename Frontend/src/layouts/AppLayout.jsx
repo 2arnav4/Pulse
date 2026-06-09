@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import DemoBanner from "../components/DemoBanner";
 import styles from "./AppLayout.module.css";
 import CreateWorkspaceModal from "../pages/Dashboard/CreateWorkspaceModal";
 
@@ -30,6 +31,7 @@ export default function AppLayout() {
     <div className={styles.appContainer}>
       <Sidebar onNewWorkspace={() => setIsCreateWorkspaceOpen(true)} />
       <main className={styles.mainContent}>
+        <DemoBanner />
         <Outlet />
       </main>
 
