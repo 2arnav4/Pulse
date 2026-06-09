@@ -214,6 +214,17 @@
   border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: 12px;
   padding: 10px 10px 6px;
+  min-height: 162px;
+}
+
+.emptyChart {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  font-weight: 800;
+  height: 140px;
+  justify-content: center;
+  text-align: center;
 }
 
 .rows {
@@ -288,4 +299,3 @@
   .grid { padding: 16px; }
   .pageTitle { font-size: 24px; }
 }
-

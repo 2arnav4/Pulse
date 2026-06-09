@@ -35,13 +35,13 @@ export default function Sidebar({ onNewWorkspace }) {
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.brand}>
+      <Link className={styles.brand} to="/dashboard" aria-label="Go to dashboard">
         <div className={styles["brand-icon"]}>P</div>
         <div className={styles.brandText}>
           <span className={styles.title}>Pulse</span>
           <span className={styles.subtitle}>Workspace</span>
         </div>
-      </div>
+      </Link>
 
       <nav className={styles.nav}>
         {navItems.map((item) => {

@@ -26,6 +26,14 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-left:hover .logo-pulse {
+  transform: translateY(-1px);
 }
 
 .logo-pulse {
@@ -40,6 +48,7 @@
   font-size: 24px;
   color: white;
   box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);
+  transition: transform 0.2s ease;
 }
 
 .nav-title {

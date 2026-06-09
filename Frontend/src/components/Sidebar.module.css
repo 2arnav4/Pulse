@@ -17,6 +17,13 @@
   align-items: center;
   padding: 32px 24px;
   gap: 16px;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.brand:hover {
+  opacity: 0.9;
 }
 
 .brand-icon {

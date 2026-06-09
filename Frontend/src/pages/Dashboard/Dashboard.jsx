@@ -69,10 +69,15 @@ export default function Dashboard() {
   return (
     <div className={styles["dashboard-container"]}>
       <nav className={styles["dashboard-navbar"]}>
-        <div className={styles["nav-left"]}>
+        <button
+          className={styles["nav-left"]}
+          type="button"
+          onClick={() => navigate("/dashboard")}
+          aria-label="Go to dashboard"
+        >
           <div className={styles["logo-pulse"]}>P</div>
           <span className={styles["nav-title"]}>Pulse</span>
-        </div>
+        </button>
         <div className={styles["nav-right"]}>
           <div className={styles["user-profile"]}>
             <div className={styles["avatar"]}>{avatarLetter}</div>
