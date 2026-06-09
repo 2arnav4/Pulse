@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import api from "../../services/api";
 import ReactMarkdown from "react-markdown";
 import styles from "../Dashboard/CreateWorkspaceModal.module.css";
@@ -8,7 +8,7 @@ export default function StandupModal({ workspaceId, onClose, isOpen }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchStandup = async () => {
+  const fetchStandup = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -25,14 +25,14 @@ export default function StandupModal({ workspaceId, onClose, isOpen }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [workspaceId]);
 
   // Only trigger the AI when the user actually opens the modal
   useEffect(() => {
     if (isOpen) {
       fetchStandup();
     }
-  }, [isOpen, workspaceId]);
+  }, [fetchStandup, isOpen]);
 
   if (!isOpen) return null;
 
@@ -41,7 +41,7 @@ export default function StandupModal({ workspaceId, onClose, isOpen }) {
       <div
         className={styles["modal-content"]}
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: "600px" }}
+        data-size="wide"
       >
         <div className={styles["modal-header"]}>
           <h2>AI Daily Standup</h2>
@@ -50,46 +50,24 @@ export default function StandupModal({ workspaceId, onClose, isOpen }) {
 
         <div
           className={styles["form-group"]}
-          style={{
-            marginTop: "20px",
-            minHeight: "150px",
-            background: "var(--bg-secondary)",
-            padding: "20px",
-            borderRadius: "12px",
-            overflowY: "auto",
-            maxHeight: "400px",
-          }}
+          data-standup-panel
         >
           {loading && (
-            <p
-              style={{
-                textAlign: "center",
-                color: "var(--text-muted)",
-                marginTop: "60px",
-                fontWeight: "600",
-              }}
-            >
-              🧠 Connecting and analyzing tasks...
+            <p className={styles["standup-loading"]}>
+              Connecting and analyzing tasks...
             </p>
           )}
           {error && (
-            <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+            <p className={styles["standup-error"]}>{error}</p>
           )}
           {!loading && !error && standup && (
-            <div
-              className="markdown-content"
-              style={{
-                color: "var(--text-main)",
-                lineHeight: "1.6",
-                fontSize: "0.95rem",
-              }}
-            >
+            <div className={styles["markdown-content"]}>
               <ReactMarkdown>{standup}</ReactMarkdown>
             </div>
           )}
         </div>
 
-        <div className={styles["modal-actions"]} style={{ marginTop: "20px" }}>
+        <div className={styles["modal-actions"]}>
           <button
             type="button"
             className={styles["cancel-btn"]}
@@ -103,7 +81,7 @@ export default function StandupModal({ workspaceId, onClose, isOpen }) {
             className={styles["submit-btn"]}
             onClick={fetchStandup}
             disabled={loading}
-            style={{ background: "var(--accent-ai)", color: "var(--bg-base)" }}
+            data-variant="ai"
           >
             {loading ? "Generating..." : "Regenerate AI Report"}
           </button>

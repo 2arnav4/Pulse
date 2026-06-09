@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/authCore";
 import styles from "./AnalyticsPage.module.css";
 import { HiLogout } from "react-icons/hi";
 
@@ -58,7 +58,7 @@ export default function AnalyticsPage() {
       try {
         const res = await api.get(`/workspaces/${id}`);
         setWorkspaceName(res.data?.workspace?.name || "");
-      } catch (e) {
+      } catch {
         toast.error("Failed to load analytics.");
       } finally {
         setLoading(false);

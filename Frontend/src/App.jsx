@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { useAuth } from "./context/authCore";
 import { Toaster } from "react-hot-toast";
 
 import AuthPage from "./pages/Auth/AuthPage";

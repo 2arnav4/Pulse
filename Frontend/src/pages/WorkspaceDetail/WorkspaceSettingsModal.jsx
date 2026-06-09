@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
-import styles from "../Dashboard/CreateWorkspaceModal.module.css"; 
+import styles from "../Dashboard/CreateWorkspaceModal.module.css";
 
 export default function WorkspaceSettingsModal({ isOpen, onClose, workspaceId, members, activeUserId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,7 +22,7 @@ export default function WorkspaceSettingsModal({ isOpen, onClose, workspaceId, m
       await api.delete(`/workspaces/${workspaceId}`);
       toast.success("Workspace deleted");
       navigate("/dashboard");
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete workspace");
       setIsSubmitting(false);
     }
@@ -48,14 +48,18 @@ export default function WorkspaceSettingsModal({ isOpen, onClose, workspaceId, m
           <p>Manage members and dangerous actions.</p>
         </div>
         
-        <div className={styles["form-group"]} style={{ marginTop: "20px" }}>
-          <h3 style={{ fontSize: "1rem", marginBottom: "10px" }}>Manage Members</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
+        <div className={styles["form-group"]}>
+          <h3 className={styles["modal-section-title"]}>Manage Members</h3>
+          <ul className={styles["settings-member-list"]}>
             {members.map(m => (
-              <li key={m.id} style={{ display: "flex", justifyContent: "space-between", padding: "10px", borderBottom: "1px solid var(--border)", alignItems: "center" }}>
-                <span>{m.username} <span style={{fontSize: "0.8rem", color: "gray"}}>({m.role})</span></span>
+              <li key={m.id} className={styles["settings-member-row"]}>
+                <span>{m.username} <span>({m.role})</span></span>
                 {isAdmin && m.id !== activeUserId && (
-                  <button onClick={() => handleRemoveMember(m.id)} style={{ color: "red", background: "none", border: "none", cursor: "pointer", fontWeight: "bold" }}>
+                  <button
+                    onClick={() => handleRemoveMember(m.id)}
+                    className={styles["remove-member-btn"]}
+                    type="button"
+                  >
                     Remove
                   </button>
                 )}
@@ -65,19 +69,21 @@ export default function WorkspaceSettingsModal({ isOpen, onClose, workspaceId, m
         </div>
 
         {isAdmin && (
-          <div className={styles["form-group"]} style={{ marginTop: "30px", borderTop: "1px solid var(--border)", paddingTop: "20px" }}>
-            <h3 style={{ fontSize: "1rem", color: "red", marginBottom: "10px" }}>Danger Zone</h3>
+          <div className={styles["danger-zone"]}>
+            <h3>Danger Zone</h3>
             <button 
               onClick={handleDeleteWorkspace} 
               disabled={isSubmitting}
-              style={{ width: "100%", padding: "10px", background: "#fee2e2", color: "#ef4444", border: "1px solid #ef4444", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}>
+              className={styles["danger-btn"]}
+              type="button"
+            >
               {isSubmitting ? "Deleting..." : "Permanently Delete Workspace"}
             </button>
           </div>
         )}
 
-        <div className={styles["modal-actions"]} style={{ marginTop: "20px" }}>
-          <button type="button" className={styles["cancel-btn"]} onClick={onClose} style={{ width: "100%" }}>Close Settings</button>
+        <div className={styles["modal-actions"]}>
+          <button type="button" className={styles["cancel-btn"]} onClick={onClose} data-full-width>Close Settings</button>
         </div>
       </div>
     </div>

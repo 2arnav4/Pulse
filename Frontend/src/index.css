@@ -82,6 +82,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+input,
+textarea,
+select {
+  color: var(--text-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+select option {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
 /* Hide scrollbar but keep scroll */
 ::-webkit-scrollbar { width: 0; }
 

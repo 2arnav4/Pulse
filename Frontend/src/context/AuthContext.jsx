@@ -1,12 +1,7 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api";
 import { DEMO_USER, resetDemoStore } from "../services/demoStore";
-
-//Create Context
-export const AuthContext = createContext();
-
-// Simple hook to use it inside components easily
-export const useAuth = () => useContext(AuthContext);
+import { AuthContext } from "./authCore";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);

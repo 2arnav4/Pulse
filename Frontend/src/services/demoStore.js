@@ -218,7 +218,6 @@ export function handleDemoRequest(config) {
   const url = (config.url || "").replace(/^\//, "");
   const path = url.startsWith("api/") ? url.slice(4) : url;
   const body = parseBody(config.data);
-  const workspaceId = getWorkspaceIdFromPath(`/${path}`);
 
   if (path === "workspaces" && method === "get") {
     return { data: store.workspaces, status: 200 };
@@ -288,6 +287,10 @@ export function handleDemoRequest(config) {
     const id = parseInt(memberMatch[1], 10);
     const email = body.email?.trim();
     if (!email) reject(400, "Email is required");
+    if (!store.workspaceDetails[id]) reject(404, "Workspace not found");
+    if ((store.members[id] || []).some((m) => m.email === email)) {
+      reject(400, "User is already in this workspace");
+    }
 
     const username = email.split("@")[0];
     const newMember = {
@@ -298,8 +301,8 @@ export function handleDemoRequest(config) {
       joinedAt: new Date().toISOString(),
     };
 
-    store.members[id]?.push(newMember);
-    store.workspaceDetails[id]?.members.push(newMember);
+    store.members[id] = [...(store.members[id] || []), newMember];
+    store.workspaceDetails[id].members = store.members[id];
 
     return {
       data: { message: "Member added successfully", member: newMember },
@@ -337,14 +340,17 @@ export function handleDemoRequest(config) {
 
   if (tasksMatch && method === "post") {
     const id = parseInt(tasksMatch[1], 10);
+    if (!store.workspaceDetails[id]) reject(404, "Workspace not found");
     const taskId = nextTaskId++;
+    const title = body.title?.trim();
+    if (!title) reject(400, "Task title is required");
     const assignedTo = body.assignedTo ?? null;
     const member = (store.members[id] || []).find((m) => m.id === assignedTo);
 
     const newTask = {
       id: taskId,
-      title: body.title,
-      description: body.description || "",
+      title,
+      description: body.description?.trim() || "",
       status: "todo",
       workspaceId: id,
       assignedTo,

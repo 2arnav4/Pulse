@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/authCore";
 import StandupModal from "../WorkspaceDetail/StandupModal";
 import styles from "./SettingsPage.module.css";
 import { HiLogout } from "react-icons/hi";
@@ -16,8 +16,7 @@ export default function SettingsPage() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Your screenshot shows the standup modal open, so we start it open.
-  const [isStandupOpen, setIsStandupOpen] = useState(true);
+  const [isStandupOpen, setIsStandupOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const activeUserRole = useMemo(
@@ -32,7 +31,7 @@ export default function SettingsPage() {
       const res = await api.get(`/workspaces/${id}`);
       setWorkspace(res.data?.workspace || null);
       setMembers(res.data?.members || []);
-    } catch (e) {
+    } catch {
       toast.error("Failed to load workspace settings.");
       navigate("/dashboard");
     } finally {
@@ -57,7 +56,7 @@ export default function SettingsPage() {
       await api.delete(`/workspaces/${id}`);
       toast.success("Workspace deleted");
       navigate("/dashboard");
-    } catch (e) {
+    } catch {
       toast.error("Failed to delete workspace");
     } finally {
       setIsDeleting(false);

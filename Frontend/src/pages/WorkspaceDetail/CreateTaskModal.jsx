@@ -36,7 +36,7 @@ export default function CreateTaskModal({
       setAssignedTo("");
       onClose();
     } catch (error) {
-      toast.error("Failed to create task");
+      toast.error(error.response?.data?.message || "Failed to create task");
     } finally {
       setIsSubmitting(false);
     }
@@ -73,20 +73,15 @@ export default function CreateTaskModal({
           <div className={styles["form-group"]}>
             <label>Assign To (Optional)</label>
             <select
+              className={styles.select}
               value={assignedTo}
               onChange={(e) => setAssignedTo(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "8px",
-                border: "1px solid rgba(203, 153, 126, 0.3)",
-              }}
             >
               <option value="">Unassigned</option>
               {members.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.username}
-                </option> // Renders existing workspace members inside the dropdown
+                </option>
               ))}
             </select>
           </div>

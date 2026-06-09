@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/authCore";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import styles from "./Dashboard.module.css";
@@ -21,6 +21,7 @@ const COVER_IMAGES = [
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
+  const { createdWorkspaces = [] } = useOutletContext() || {};
   const navigate = useNavigate();
   const [workspaces, setWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,15 +52,13 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const onWorkspaceCreated = (event) => {
-      const newSpace = event.detail;
-      if (!newSpace?.id) return;
-      setWorkspaces((prev) => [...prev, newSpace]);
-    };
-    window.addEventListener("workspace-created", onWorkspaceCreated);
-    return () =>
-      window.removeEventListener("workspace-created", onWorkspaceCreated);
-  }, []);
+    setWorkspaces((prev) => {
+      const missingWorkspaces = createdWorkspaces.filter(
+        (newSpace) => !prev.some((space) => space.id === newSpace.id),
+      );
+      return missingWorkspaces.length ? [...prev, ...missingWorkspaces] : prev;
+    });
+  }, [createdWorkspaces]);
 
   const filteredWorkspaces = workspaces.filter((space) =>
     space.name.toLowerCase().includes(searchQuery.toLowerCase()),

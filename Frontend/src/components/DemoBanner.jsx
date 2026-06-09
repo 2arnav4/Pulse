@@ -1,4 +1,4 @@
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authCore";
 import { Sparkles } from "lucide-react";
 import styles from "./DemoBanner.module.css";
 
