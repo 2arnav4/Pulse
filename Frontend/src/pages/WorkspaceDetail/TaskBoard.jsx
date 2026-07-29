@@ -45,17 +45,23 @@ export default function TaskBoard({ workspaceId, members }) {
 
   // C. Update Task Status
   const handleStatusChange = async (taskId, newStatus) => {
-    try {
-      // Optimistically update the UI instantly
-      setTasks((prev) =>
-        prev.map((task) =>
-          task.id === taskId ? { ...task, status: newStatus } : task
-        )
+    // Keep the pre-update board so a failed request can be undone. Without this
+    // the card keeps showing a status the server never accepted.
+    let previousTasks;
+    setTasks((prev) => {
+      previousTasks = prev;
+      return prev.map((task) =>
+        task.id === taskId ? { ...task, status: newStatus } : task
       );
+    });
+
+    try {
       // Wait for backend to confirm
       await api.put(`/workspaces/${workspaceId}/tasks/${taskId}`, { status: newStatus });
       toast.success("Task updated!");
     } catch {
+      // Roll the board back to what the server still believes is true
+      setTasks(previousTasks);
       toast.error("Failed to update task");
     }
   };
