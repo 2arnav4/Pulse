@@ -48,6 +48,12 @@ export async function createTask(req, res) {
             return res.status(403).json({ message: "Access denied. You are not a member." });
         }
 
+        // The assignee has to belong here too. Otherwise a task can be parked on a
+        // user who cannot open the board it lives on.
+        if (assignedTo && !(await isUserInWorkspace(assignedTo, workspaceId))) {
+            return res.status(400).json({ message: "Assignee is not a member of this workspace" });
+        }
+
         // Create the task ticket
         const newTask = await Task.create({
             title,
@@ -93,6 +99,12 @@ export async function updateTaskStatus(req, res) {
 export const generateStandup = async (req, res) => {
     try {
         const { id: workspaceId } = req.params;
+        const userId = req.user.id;
+
+        // Block if not a workspace member
+        if (!(await isUserInWorkspace(userId, workspaceId))) {
+            return res.status(403).json({ message: "Access denied. You are not a member." });
+        }
 
         // Fetch tasks updated in last 24 hours
         const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
