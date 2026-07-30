@@ -42,21 +42,21 @@ Task.belongsTo(User, { as: 'Assignee', foreignKey: 'assignedTo' });
 
 const app = express();
 
+// Render terminates TLS at a proxy, so req.socket.remoteAddress is the proxy,
+// not the visitor. Without this, express-rate-limit keys every request in the
+// world to the same address and the auth limit becomes one shared bucket
+// instead of one per client. Trust exactly one hop: trusting more would let a
+// caller forge X-Forwarded-For and pick their own rate-limit key.
+app.set('trust proxy', 1);
+
 // Assert required environment variables
 if (!process.env.JWT_SECRET) {
     console.error('FATAL: JWT_SECRET is not set');
     process.exit(1);
 }
 
-// Connect to Database
-connectDB(); // <--- CALL DB CONNECTION
-
-// Only sync database in development
-if (process.env.NODE_ENV !== 'production') {
-    sequelize.sync({ alter: true })
-        .then(() => console.log('Database synced successfully'))
-        .catch((err) => console.log('Database sync error', err));
-}
+// Database connection and schema sync happen in start() at the bottom of this
+// file, so the server does not begin accepting requests before either finishes.
 
 app.use(helmet());
 
@@ -78,11 +78,19 @@ app.use(cors({
     credentials: true,
 }));
 
-// Rate limiting for auth endpoints
+// Rate limiting for auth endpoints.
+//
+// The point of this limiter is to make password guessing expensive, so only
+// failed attempts are counted. Counting successes too meant a real visitor who
+// signed up, logged in, and reloaded a few times could lock themselves out
+// without ever getting a password wrong. 20 failures in 15 minutes is still far
+// below what any credential-stuffing attempt needs, and it leaves room for a
+// handful of people behind one office or campus NAT to use the app at once.
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // limit each IP to 5 requests per windowMs
-    message: 'Too many login attempts, please try again later',
+    max: 20, // failed auth attempts per IP per window
+    skipSuccessfulRequests: true, // a correct login should not consume budget
+    message: 'Too many failed login attempts, please try again later',
     standardHeaders: true,
     legacyHeaders: false,
 });
@@ -114,9 +122,39 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Schema sync is an explicit decision, not a consequence of the environment.
+//
+// This used to run whenever NODE_ENV !== 'production'. Render sets
+// NODE_ENV=production automatically for Node services, so on a fresh database
+// the sync silently never ran and every request failed against zero tables.
+// Reading "am I in production?" to answer "should I change the schema?" is the
+// wrong question, and it fails quietly in the one place it matters.
+//
+// Set RUN_DB_SYNC=true for a single deploy, confirm the log line below, then
+// remove the variable. Leaving it on means every restart runs ALTER against a
+// live schema, which can rewrite or drop columns.
+const start = async () => {
+    await connectDB(); // exits the process itself if the database is unreachable
+
+    if (process.env.RUN_DB_SYNC === 'true') {
+        console.log('RUN_DB_SYNC=true -> synchronising schema with { alter: true }');
+        try {
+            await sequelize.sync({ alter: true });
+            console.log('Database synced successfully');
+        } catch (err) {
+            console.error('FATAL: database sync failed', err);
+            process.exit(1);
+        }
+    } else {
+        console.log('RUN_DB_SYNC not set -> skipping schema sync (expected in normal operation)');
+    }
+
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+};
+
+start();
 
 // Graceful shutdown on SIGTERM
 process.on('SIGTERM', async () => {

@@ -132,12 +132,26 @@ DATABASE_URL=postgresql://user:password@localhost:5432/pulse_dev
 JWT_SECRET=<a long random string>
 GROQ_API_KEY=<from console.groq.com>
 PORT=4000
+RUN_DB_SYNC=true      # first start only, then remove
 ```
 
-Tables are created by `sequelize.sync({ alter: true })`, which **only runs when
-`NODE_ENV` is not `production`**. On a fresh production database you have to
-deploy once without that variable set, or you get a running server with no
-tables.
+### Schema changes
+
+Tables are created by `sequelize.sync({ alter: true })`, and it runs only when
+`RUN_DB_SYNC=true`. Set it for one start against a new database, check the log
+says `Database synced successfully`, then remove it. Leaving it on runs `ALTER`
+against a live schema on every restart, which can rewrite or drop columns.
+
+This used to be keyed off `NODE_ENV !== 'production'` instead, which is a bug
+worth understanding. Render sets `NODE_ENV=production` automatically for Node
+services, so the sync silently never ran on the first deploy: the server booted
+cleanly, reported healthy, and returned 500 on every request because the
+database had no tables. "Am I in production?" is the wrong question to answer
+"should I change the schema?", and it failed quietly in the one environment
+where it mattered.
+
+`start()` also awaits the connection and the sync before calling `app.listen`,
+so the server cannot accept a request before its tables exist.
 
 ## Known gaps
 
